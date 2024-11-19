@@ -1,7 +1,6 @@
 {
   "Changes": [
-    [
-      {
+    {
         "Action": "UPSERT",
         "ResourceRecordSet": {
           "Name": "test_hikaru.com.",
@@ -49,6 +48,5 @@
           "Type": "A"
         }
       }
-    ]
   ]
 }
