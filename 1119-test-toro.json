@@ -1,6 +1,5 @@
 {
   "Changes": [
-    [
       {
         "Action": "UPSERT",
         "ResourceRecordSet": {
@@ -49,6 +48,5 @@
           "Type": "A"
         }
       }
-    ]
   ]
 }

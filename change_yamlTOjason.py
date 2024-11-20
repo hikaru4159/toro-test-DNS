@@ -10,4 +10,4 @@ def change_json(input_yaml, output_json):
     with open(output_json, 'w') as json_file:
         json.dump(data, json_file, indent=4)
 
-change_json(".\\1119-test-toro.yml", ".\\exch_1119-test-toro.json")
+change_json(".\\1119-test-toro.yaml", ".\\exch_1119-test-toro.json")
