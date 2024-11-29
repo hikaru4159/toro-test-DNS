@@ -32,7 +32,8 @@ jobs:
           echo "hosted_zones=$hosted_zones" >> $GITHUB_ENV
 
       - name: Output Hosted Zones
-        run: echo "Hosted Zones: ${{ env.hosted_zones }}"
+        run: |
+          echo "Hosted Zones: ${{ env.hosted_zones }}"
 
       # - name: Install dependencies
       #   run: |
