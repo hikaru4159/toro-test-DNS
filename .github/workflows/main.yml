@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   get-hosted-zones:
     runs-on: ubuntu-latest
@@ -16,7 +20,7 @@ jobs:
 
       - name: Configure AWS Credentials
         id: configure-aws-credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
           aws-region: ap-northeast-1
