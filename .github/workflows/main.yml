@@ -1,0 +1,62 @@
+name: Upload YAML to S3
+
+on:
+  push:
+    branches:
+      - main  # ここは適切なブランチ名に変更してください
+
+jobs:
+  get-hosted-zone-info:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'  # 使用するPythonのバージョン
+
+      # - name: Install dependencies
+      #   run: |
+      #     pip install pyyaml
+
+      # - name: Find latest YAML file
+      #   id: find_yaml
+      #   run: |
+      #     latest_yaml=$(ls -t *.yaml | head -n 1)
+      #     echo "latest_yaml=$latest_yaml" >> $GITHUB_ENV
+
+      # - name: Convert YAML to JSON
+      #   id: convert_yaml
+      #   run: |
+      #     python -c "
+      #       import yaml
+      #       import json
+      #       import os
+
+      #       with open(os.getenv('latest_yaml'), 'r') as yaml_file:
+      #           yaml_data = yaml.safe_load(yaml_file)
+
+      #       json_data = json.dumps(yaml_data, indent=4)
+
+      #       with open('output.json', 'w') as json_file:
+      #           json_file.write(json_data)
+      #       "
+      - name: Configure aws-credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::157094121738:role/mng-iam-role-github-oidc-project
+          aws-region: ap-northeast-1
+
+      - name: Get Route 53 Hosted Zones
+        id: get-hosted-zones
+        run: |
+          aws route53 list-hosted-zones --output json > hosted_zones.json
+          cat hosted_zones.json
+
+      - name: Display Hosted Zone Info
+        run: |
+          echo "Hosted Zones:"
+          cat hosted_zones.json
