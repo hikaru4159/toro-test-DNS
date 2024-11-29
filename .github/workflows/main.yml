@@ -1,10 +1,11 @@
-
 name: Get Route 53 Hosted Zones
 
 on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '*/1 * * * *'  # 1分ごとに実行
 
 permissions:
   id-token: write
@@ -35,6 +36,57 @@ jobs:
         run: |
           echo "Hosted Zones: ${{ env.hosted_zones }}"
 
+      - name: Get Record Sets for Hosted Zones
+        id: get-record-sets
+        run: |
+          # ここでは、取得したホストゾーンIDを使ってレコードセットを取得
+          # 例として、最初のホストゾーンのIDを使用しています
+          zone_id=$(echo "${{ env.hosted_zones }}" | jq -r '.[0].Id')
+          record_sets=$(aws route53 list-resource-record-sets --hosted-zone-id "$zone_id" --output json)
+          echo "record_sets=$(echo $record_sets | jq -R '@json')" >> $GITHUB_ENV
+
+      - name: Output Record Sets
+        run: |
+          echo "Record Sets: ${{ env.record_sets }}"
+
+
+
+# name: Get Route 53 Hosted Zones
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# permissions:
+#   id-token: write
+#   contents: read
+
+# jobs:
+#   get-hosted-zones:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Configure AWS Credentials
+#         id: configure-aws-credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
+#           aws-region: ap-northeast-1
+
+#       - name: List Route 53 Hosted Zones
+#         id: list-hosted-zones
+#         run: |
+#           hosted_zones=$(aws route53 list-hosted-zones --query 'HostedZones[*].{Id: Id, Name: Name}' --output json)
+#           echo "hosted_zones=$(echo $hosted_zones | jq -R '@json')" >> $GITHUB_ENV
+
+#       - name: Output Hosted Zones
+#         run: |
+#           echo "Hosted Zones: ${{ env.hosted_zones }}"
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       # - name: Install dependencies
       #   run: |
       #     pip install pyyaml
