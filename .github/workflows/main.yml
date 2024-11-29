@@ -29,8 +29,7 @@ jobs:
       - name: List Route 53 Hosted Zones
         id: list-hosted-zones
         run: |
-          hosted_zones=$(aws route53 list-hosted-zones --query 'HostedZones[*].{Id: Id, Name: Name}' --output json)
-          echo "hosted_zones=$(echo $hosted_zones | jq -R '@json')" >> $GITHUB_ENV
+          hosted_zones='[ { "Id": "/hostedzone/Z00472302270PGXR4HNSE", "Name": "test_hikaru.com." }, { "Id": "/hostedzone/Z0374861KQVEJPNCYUYT", "Name": "handson.toro.toyota." } ]' >> $GITHUB_ENV
 
       - name: Output Hosted Zones
         run: |
