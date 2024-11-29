@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - main  # ここは適切なブランチ名に変更してください
+      
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   get-hosted-zone-info:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - name: Checkout the repository
