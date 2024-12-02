@@ -13,7 +13,7 @@ def convert_yaml(input_file_name, output_file_name):
 
     # 新しい形式に変換
     changes = []
-    for record in loaded_data["ResourceRecordSets"]:
+    for record in loaded_data:
         if 'AliasTarget' in record:
             changes.append({
                 'Action': 'UPSERT',
