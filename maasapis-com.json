@@ -18,7 +18,7 @@
                         "Value": "ns-197.awsdns-24.com."
                     }
                 ],
-                "TTL": 100,
+                "TTL": 333,
                 "Type": "NS"
             }
         },
