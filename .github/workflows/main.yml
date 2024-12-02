@@ -44,7 +44,7 @@ jobs:
 
       - name: Backup acquisition
         run: |
-          if [ '${{ github.event_name }}' == 'push' ]; then
+          if [ '${{ github.event_name }}' == 'schedule' ]; then
             # aws route53 list-hosted-zones
             # 動的にやりたければ↑からホストゾーンID拾う
             aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
