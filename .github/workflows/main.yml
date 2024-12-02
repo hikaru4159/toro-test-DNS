@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - main
+  # schedule:
+  #   - cron: '*/1 * * * *'  # 1分ごとに実行
+         #     * * * * *
+             # | | | | |
+             # | | | | +---- 日 (0 - 31)
+             # | | | +------ 月 (1 - 12)
+             # | | +-------- 曜日 (0 - 7) (日曜日は0または7)
+             # | +---------- 時間 (0 - 23)
+             # +------------ 分 (0 - 59)
 
 permissions:
   id-token: write
@@ -27,9 +36,44 @@ jobs:
       - name: List Route 53 Hosted Zones
         id: list-hosted-zones
         run: |
-          echo "Checking AWS credentials..."
-          aws sts get-caller-identity || { echo "Unable to get caller identity. Check AWS credentials."; exit 1; }
-          aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json || { echo "Failed to list resource record sets"; exit 1; }
+          if [ '${{ github.event_name }}' == 'push' ]; then
+            aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
+          fi
+
+      - name: Json file check
+        permissions:
+          actions: write
+          checks: write
+          contents: write
+          deployments: write
+          issues: write
+          packages: write
+          pull-requests: write
+          repository-projects: write
+          security-events: write
+          statuses: write
+        run: |
+          if ! ls *.json 1> /dev/null 2>&1; then
+            echo "jsonファイルが存在しないので終了"
+            exit 0
+          else
+            python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
+            rm maasapis-com.json
+
+            mv maasapis-com.yaml maasapis.com/
+
+            git config --local user.email "hikaru_takahashi@mail.toyota.co.jp"
+            git config --local user.name "hikaru4159"
+            git add maasapis.com/maasapis-com.yaml
+            git add maasapis-com.json
+            if ! git diff --cached --quiet; then
+              git commit -m "Update backup file"
+              git push
+            else
+              echo "変更がありません"
+            fi
+          fi
+
 
 
 
