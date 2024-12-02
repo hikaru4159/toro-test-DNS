@@ -17,15 +17,6 @@ on:
 permissions:
   id-token: write
   contents: write
-  # actions: write
-  # checks: write
-  # deployments: write
-  # issues: write
-  # packages: write
-  # pull-requests: write
-  # repository-projects: write
-  # security-events: write
-  # statuses: write
 
 jobs:
   get-hosted-zones:
@@ -92,66 +83,3 @@ jobs:
 
 
 
-
-# name: Get Route 53 Hosted Zones
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# permissions:
-#   id-token: write
-#   contents: read
-
-# jobs:
-#   get-hosted-zones:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Configure AWS Credentials
-#         id: configure-aws-credentials
-#         uses: aws-actions/configure-aws-credentials@v4
-#         with:
-#           role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
-#           aws-region: ap-northeast-1
-
-#       - name: List Route 53 Hosted Zones
-#         id: list-hosted-zones
-#         run: |
-#           hosted_zones=$(aws route53 list-hosted-zones --query 'HostedZones[*].{Id: Id, Name: Name}' --output json)
-#           echo "hosted_zones=$(echo $hosted_zones | jq -R '@json')" >> $GITHUB_ENV
-
-#       - name: Output Hosted Zones
-#         run: |
-#           echo "Hosted Zones: ${{ env.hosted_zones }}"
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      # - name: Install dependencies
-      #   run: |
-      #     pip install pyyaml
-
-      # - name: Find latest YAML file
-      #   id: find_yaml
-      #   run: |
-      #     latest_yaml=$(ls -t *.yaml | head -n 1)
-      #     echo "latest_yaml=$latest_yaml" >> $GITHUB_ENV
-
-      # - name: Convert YAML to JSON
-      #   id: convert_yaml
-      #   run: |
-      #     python -c "
-      #       import yaml
-      #       import json
-      #       import os
-
-      #       with open(os.getenv('latest_yaml'), 'r') as yaml_file:
-      #           yaml_data = yaml.safe_load(yaml_file)
-
-      #       json_data = json.dumps(yaml_data, indent=4)
-
-      #       with open('output.json', 'w') as json_file:
-      #           json_file.write(json_data)
-      #       "
