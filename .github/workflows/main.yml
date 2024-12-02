@@ -37,24 +37,55 @@ jobs:
         id: list-hosted-zones
         run: |
           # ホストゾーンIDのみを指定
-          hosted_zone_id='/hostedzone/Z00472302270PGXR4HNSE'
-          echo "hosted_zone_id=$hosted_zone_id" >> $GITHUB_ENV
+          # if [ '${{ github.event_name }}' == 'schedule' ]; then
+          if [ '${{ github.event_name }}' == 'push' ]; then
+            # hosted_zone_id='/hostedzone/Z08453503RDFJHEMC447T'
+            # echo "hosted_zone_id=$hosted_zone_id" >> $GITHUB_ENV
+            # echo "Hosted Zone ID: ${{ env.hosted_zone_id }}"
+              # 指定したホストゾーンIDを使ってレコードセットを取得
+            # record_sets=$(aws route53 list-resource-record-sets --hosted-zone-id "${{ env.hosted_zone_id }}" --output json)
+            # echo "record_sets=$(echo $record_sets | jq -R '@json')" >> $GITHUB_ENV
+            # echo "Record Sets: ${{ env.record_sets }}"
 
-      - name: Output Hosted Zone ID
+            aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
+          fi
+
+      # - name: Output Hosted Zone ID
+      #   run: |
+      #     echo "Hosted Zone ID: ${{ env.hosted_zone_id }}"
+
+      # - name: Get Record Sets for Hosted Zone
+      #   id: get-record-sets
+      #   run: |
+      #     # 指定したホストゾーンIDを使ってレコードセットを取得
+      #     record_sets=$(aws route53 list-resource-record-sets --hosted-zone-id "${{ env.hosted_zone_id }}" --output json)
+      #     echo "record_sets=$(echo $record_sets | jq -R '@json')" >> $GITHUB_ENV
+
+      # - name: Output Record Sets
+      #   run: |
+      #     echo "Record Sets: ${{ env.record_sets }}"
+      - name: Json file check
         run: |
-          echo "Hosted Zone ID: ${{ env.hosted_zone_id }}"
+          if ! ls *.json 1> /dev/null 2>&1; then
+            echo "jsonファイルが存在しないので終了"
+            exit 0
+          else
+            python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
+            rm maasapis-com.json
 
-      - name: Get Record Sets for Hosted Zone
-        id: get-record-sets
-        run: |
-          # 指定したホストゾーンIDを使ってレコードセットを取得
-          record_sets=$(aws route53 list-resource-record-sets --hosted-zone-id "${{ env.hosted_zone_id }}" --output json)
-          echo "record_sets=$(echo $record_sets | jq -R '@json')" >> $GITHUB_ENV
+            mv maasapis-com.yaml maasapis.com/
 
-      - name: Output Record Sets
-        run: |
-          echo "Record Sets: ${{ env.record_sets }}"
-
+            git config --local user.email "example@example.com"
+            git config --local user.name "example"
+            git add maasapis.com/maasapis-com.yaml
+            git add maasapis-com.json
+            if ! git diff --cached --quiet; then
+              git commit -m "Update backup file"
+              git push
+            else
+              echo "変更がありません"
+            fi
+          fi
 
 
 

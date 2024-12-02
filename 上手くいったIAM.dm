@@ -1,3 +1,9 @@
+IDプロバイダ設定
+プロバイダのタイプ	OpenID Connect
+プロバイダの URL	https://token.actions.githubusercontent.com
+~ ( 入力後、 サムプリントを取得 をクリックします。 ) ~
+対象者	sts.amazonaws.com
+
 
 ロール作成⇒ウェブサービス⇒作成したIDプロバイダの設定を使う　
 ロール名: hikaru_OIDC_test 
@@ -23,6 +29,9 @@ ARN: arn:aws:iam::157094121738:role/hikaru_OIDC_test
         }
     ]
 }
+
+
+
 ___ 
 1. OIDCプロバイダーの作成
 まず、AWSにGitHubのOIDCプロバイダーを作成します。
