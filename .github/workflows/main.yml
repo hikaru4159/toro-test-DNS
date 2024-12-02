@@ -17,6 +17,15 @@ on:
 permissions:
   id-token: write
   contents: read
+  actions: write
+  checks: write
+  deployments: write
+  issues: write
+  packages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
 
 jobs:
   get-hosted-zones:
@@ -41,17 +50,6 @@ jobs:
           fi
 
       - name: Json file check
-        permissions:
-          actions: write
-          checks: write
-          contents: write
-          deployments: write
-          issues: write
-          packages: write
-          pull-requests: write
-          repository-projects: write
-          security-events: write
-          statuses: write
         run: |
           if ! ls *.json 1> /dev/null 2>&1; then
             echo "jsonファイルが存在しないので終了"
