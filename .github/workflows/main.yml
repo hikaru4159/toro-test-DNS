@@ -71,7 +71,7 @@ jobs:
             # GitHub Actionsの環境変数に出力を保存
             echo "yaml_output<<EOF" >> $GITHUB_ENV
             echo "$yaml_output" >> $GITHUB_ENV
-            echo "EOF"
+            echo "EOF" >> $GITHUB_ENV  # EOFを新しい行で追加
 
             rm maasapis-com.json
 
