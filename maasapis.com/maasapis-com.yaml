@@ -7,7 +7,7 @@ Changes:
     - Value: ns-984.awsdns-59.net.
     - Value: ns-1567.awsdns-03.co.uk.
     - Value: ns-197.awsdns-24.com.
-    TTL: 172800
+    TTL: 100
     Type: NS
 - Action: UPSERT
   ResourceRecordSet:
