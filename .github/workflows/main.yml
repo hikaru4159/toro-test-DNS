@@ -75,8 +75,8 @@ jobs:
 
             mv maasapis-com.yaml maasapis.com/
 
-            git config --local user.email "example@example.com"
-            git config --local user.name "example"
+            git config --local user.email "hikaru_takahashi@mail.toyota.co.jp"
+            git config --local user.name "hikaru4159"
             git add maasapis.com/maasapis-com.yaml
             git add maasapis-com.json
             if ! git diff --cached --quiet; then
