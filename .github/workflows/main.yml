@@ -1,77 +1,74 @@
-name: Get Route 53 Hosted Zones
-
+# ワークフロー名
+name: main workflow
 on:
   push:
     branches:
       - main
-  # schedule:
-  #   - cron: '*/1 * * * *'  # 1分ごとに実行
-         #     * * * * *
-             # | | | | |
-             # | | | | +---- 日 (0 - 31)
-             # | | | +------ 月 (1 - 12)
-             # | | +-------- 曜日 (0 - 7) (日曜日は0または7)
-             # | +---------- 時間 (0 - 23)
-             # +------------ 分 (0 - 59)
+  schedule:
+    # 定期実行する時間 +9:00すると日本時間
+    - cron: '30 6 * * *'
 
 permissions:
   id-token: write
   contents: write
 
 jobs:
-  get-hosted-zones:
+  DNS_backup:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        id: configure-aws-credentials
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install aws-cli-v2
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+          unzip -q awscliv2.zip
+          sudo ./aws/install --update
+
+      - name: Configure aws-credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
+          role-to-assume: arn:aws:iam::664880012411:role/dns-backup-iam-role-github-oidc-project
           aws-region: ap-northeast-1
 
-      - name: List Route 53 Hosted Zones
-        id: list-hosted-zones
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Backup acquisition
         run: |
           if [ '${{ github.event_name }}' == 'push' ]; then
-            aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
+            # aws route53 list-hosted-zones
+            # 動的にやりたければ↑からホストゾーンID拾う
+            aws route53 list-resource-record-sets --hosted-zone-id Z0457826B5ACO1A9VTHK > maasapis-com.json
           fi
 
       - name: Json file check
-        env:
-          GITHUB_MAIL: 41898282+github-actions[bot]@users.noreply.github.com
-          GITHUB_NAME: github-actions[bot]
         run: |
-          if [ ! -f maasapis-com.json ]; then
-            echo "maasapis-com.jsonファイルが存在しないので終了"
+          if ! ls *.json 1> /dev/null 2>&1; then
+            echo "jsonファイルが存在しないので終了"
             exit 0
           else
-            # Pythonスクリプトを実行してYAMLファイルを生成
-            if ! python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml; then
-              echo "YAMLファイルへの変換に失敗しました"
-              exit 1
-            fi
-            
-            # YAMLファイルの内容を出力として取得
-            yaml_output=$(tail -n +3 maasapis-com.yaml)  # ここではYAMLファイルを直接読み込みます
-            echo "YAML Output: $yaml_output"
-
-            # GitHub Actionsの環境変数に出力を保存
-            echo "yaml_output<<EOF" >> $GITHUB_ENV
-            echo "$yaml_output" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV  # EOFを新しい行で追加
-
+            python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
             rm maasapis-com.json
 
             mv maasapis-com.yaml maasapis.com/
 
-            git config --local user.email "${{ env.GITHUB_MAIL }}"
-            git config --local user.name "${{ env.GITHUB_NAME }}"
+            git config --local user.email "example@example.com"
+            git config --local user.name "example"
+            if [ ! -f maasapis-com.json ]; then
+                if git ls-files --error-unmatch maasapis-com.json > /dev/null 2>&1; then
+                    git rm maasapis-com.json
+                fi
+            fi
             git add maasapis.com/maasapis-com.yaml
-
             if ! git diff --cached --quiet; then
               git commit -m "Update backup file"
               git push
@@ -79,7 +76,3 @@ jobs:
               echo "変更がありません"
             fi
           fi
-
-
-
-
