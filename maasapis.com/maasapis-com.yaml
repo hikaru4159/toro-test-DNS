@@ -15,5 +15,5 @@ Changes:
     ResourceRecords:
     - Value: ns-1449.awsdns-53.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600
         86400
-    TTL: 900
+    TTL: 999
     Type: SOA
