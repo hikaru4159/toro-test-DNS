@@ -66,7 +66,7 @@ jobs:
             git config --local user.email "${{ env.GITHUB_MAIL }}"
             git config --local user.name "${{ env.GITHUB_NAME }}"
             git add maasapis.com/maasapis-com.yaml
-            git add maasapis-com.json
+            # git add maasapis-com.json
             if ! git diff --cached --quiet; then
               git commit -m "Update backup file"
               git push
