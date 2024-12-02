@@ -54,24 +54,33 @@ jobs:
           GITHUB_MAIL: 41898282+github-actions[bot]@users.noreply.github.com
           GITHUB_NAME: github-actions[bot]
         run: |
-          if ! ls *.json 1> /dev/null 2>&1; then
-            echo "jsonファイルが存在しないので終了"
+          if [ ! -f maasapis-com.json ]; then
+            echo "maasapis-com.jsonファイルが存在しないので終了"
             exit 0
           else
-            python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
-
-            if [ $? -ne 0 ]; then
+            # Pythonスクリプトを実行してYAMLファイルを生成
+            if ! python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml; then
               echo "YAMLファイルへの変換に失敗しました"
               exit 1
             fi
+            
+            # YAMLファイルの内容を出力として取得
+            yaml_output=$(tail -n +3 maasapis-com.yaml)  # ここではYAMLファイルを直接読み込みます
+            echo "YAML Output: $yaml_output"
+
+            # GitHub Actionsの環境変数に出力を保存
+            echo "yaml_output<<EOF" >> $GITHUB_ENV
+            echo "$yaml_output" >> $GITHUB_ENV
+            echo "EOF"
 
             rm maasapis-com.json
+
             mv maasapis-com.yaml maasapis.com/
 
             git config --local user.email "${{ env.GITHUB_MAIL }}"
             git config --local user.name "${{ env.GITHUB_NAME }}"
             git add maasapis.com/maasapis-com.yaml
-            # git add maasapis-com.json
+
             if ! git diff --cached --quiet; then
               git commit -m "Update backup file"
               git push
@@ -79,6 +88,7 @@ jobs:
               echo "変更がありません"
             fi
           fi
+
 
 
 

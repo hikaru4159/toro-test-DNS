@@ -3,7 +3,6 @@ import yaml
 import sys
 
 def convert_yaml(input_file_name, output_file_name):
-
     with open(input_file_name, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
@@ -14,7 +13,6 @@ def convert_yaml(input_file_name, output_file_name):
 
     # 新しい形式に変換
     changes = []
-
     for record in loaded_data["ResourceRecordSets"]:
         if 'AliasTarget' in record:
             changes.append({
@@ -42,6 +40,10 @@ def convert_yaml(input_file_name, output_file_name):
         yaml.dump(output_data, outfile, allow_unicode=True)
     
     print(f"{output_file_name} has been updated.")  # 更新確認の出力
+
+    # YAMLファイルの内容を標準出力に出力（GitHub Actionsで取得できるように）
+    print("---")
+    print(yaml.dump(output_data, allow_unicode=True))
 
 if __name__ == "__main__":
     input_file_name = sys.argv[1]
