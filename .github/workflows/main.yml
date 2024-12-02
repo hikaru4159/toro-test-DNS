@@ -59,13 +59,12 @@ jobs:
             exit 0
           else
             python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
-            rm maasapis-com.json
 
             if [ $? -ne 0 ]; then
               echo "YAMLファイルへの変換に失敗しました"
               exit 1
             fi
-            
+
             rm maasapis-com.json
             mv maasapis-com.yaml maasapis.com/
 
