@@ -24,27 +24,13 @@ jobs:
           role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
           aws-region: ap-northeast-1
 
-  json-file-check:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      issues: write
-      packages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
-
-    steps:
       - name: List Route 53 Hosted Zones
         id: list-hosted-zones
         run: |
-          if [ '${{ github.event_name }}' == 'push' ]; then
-            aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json || { echo "Failed to list resource record sets"; exit 1; }
-          fi
+          echo "Checking AWS credentials..."
+          aws sts get-caller-identity || { echo "Unable to get caller identity. Check AWS credentials."; exit 1; }
+          aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json || { echo "Failed to list resource record sets"; exit 1; }
+
 
 
 # name: Get Route 53 Hosted Zones
