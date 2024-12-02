@@ -50,6 +50,9 @@ jobs:
           fi
 
       - name: Json file check
+        env:
+          GITHUB_MAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GITHUB_NAME: github-actions[bot]
         run: |
           if ! ls *.json 1> /dev/null 2>&1; then
             echo "jsonファイルが存在しないので終了"
@@ -60,8 +63,8 @@ jobs:
 
             mv maasapis-com.yaml maasapis.com/
 
-            git config --local user.email "hikaru_takahashi@mail.toyota.co.jp"
-            git config --local user.name "hikaru4159"
+            git config --local user.email "${{ env.GITHUB_MAIL }}"
+            git config --local user.name "${{ env.GITHUB_NAME }}"
             git add maasapis.com/maasapis-com.yaml
             git add maasapis-com.json
             if ! git diff --cached --quiet; then
