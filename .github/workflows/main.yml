@@ -4,15 +4,6 @@ on:
   push:
     branches:
       - main
-  # schedule:
-  #   - cron: '*/1 * * * *'  # 1分ごとに実行
-         #     * * * * *
-             # | | | | |
-             # | | | | +---- 日 (0 - 31)
-             # | | | +------ 月 (1 - 12)
-             # | | +-------- 曜日 (0 - 7) (日曜日は0または7)
-             # | +---------- 時間 (0 - 23)
-             # +------------ 分 (0 - 59)
 
 permissions:
   id-token: write
@@ -20,17 +11,6 @@ permissions:
 
 jobs:
   get-hosted-zones:
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      issues: write
-      packages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
     runs-on: ubuntu-latest
 
     steps:
@@ -44,60 +24,27 @@ jobs:
           role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
           aws-region: ap-northeast-1
 
+  json-file-check:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      issues: write
+      packages: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
+
+    steps:
       - name: List Route 53 Hosted Zones
         id: list-hosted-zones
         run: |
-          # ホストゾーンIDのみを指定
-          # if [ '${{ github.event_name }}' == 'schedule' ]; then
           if [ '${{ github.event_name }}' == 'push' ]; then
-            # hosted_zone_id='/hostedzone/Z08453503RDFJHEMC447T'
-            # echo "hosted_zone_id=$hosted_zone_id" >> $GITHUB_ENV
-            # echo "Hosted Zone ID: ${{ env.hosted_zone_id }}"
-              # 指定したホストゾーンIDを使ってレコードセットを取得
-            # record_sets=$(aws route53 list-resource-record-sets --hosted-zone-id "${{ env.hosted_zone_id }}" --output json)
-            # echo "record_sets=$(echo $record_sets | jq -R '@json')" >> $GITHUB_ENV
-            # echo "Record Sets: ${{ env.record_sets }}"
-
-            aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
+            aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json || { echo "Failed to list resource record sets"; exit 1; }
           fi
-
-      # - name: Output Hosted Zone ID
-      #   run: |
-      #     echo "Hosted Zone ID: ${{ env.hosted_zone_id }}"
-
-      # - name: Get Record Sets for Hosted Zone
-      #   id: get-record-sets
-      #   run: |
-      #     # 指定したホストゾーンIDを使ってレコードセットを取得
-      #     record_sets=$(aws route53 list-resource-record-sets --hosted-zone-id "${{ env.hosted_zone_id }}" --output json)
-      #     echo "record_sets=$(echo $record_sets | jq -R '@json')" >> $GITHUB_ENV
-
-      # - name: Output Record Sets
-      #   run: |
-      #     echo "Record Sets: ${{ env.record_sets }}"
-      - name: Json file check
-        run: |
-          if ! ls *.json 1> /dev/null 2>&1; then
-            echo "jsonファイルが存在しないので終了"
-            exit 0
-          else
-            python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
-            rm maasapis-com.json
-
-            mv maasapis-com.yaml maasapis.com/
-
-            git config --local user.email "hikaru_takahashi@mail.toyota.co.jp"
-            git config --local user.name "hikaru4159"
-            git add maasapis.com/maasapis-com.yaml
-            git add maasapis-com.json
-            if ! git diff --cached --quiet; then
-              git commit -m "Update backup file"
-              git push
-            else
-              echo "変更がありません"
-            fi
-          fi
-
 
 
 # name: Get Route 53 Hosted Zones
