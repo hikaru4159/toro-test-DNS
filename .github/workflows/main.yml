@@ -17,15 +17,15 @@ on:
 permissions:
   id-token: write
   contents: write
-  actions: write
-  checks: write
-  deployments: write
-  issues: write
-  packages: write
-  pull-requests: write
-  repository-projects: write
-  security-events: write
-  statuses: write
+  # actions: write
+  # checks: write
+  # deployments: write
+  # issues: write
+  # packages: write
+  # pull-requests: write
+  # repository-projects: write
+  # security-events: write
+  # statuses: write
 
 jobs:
   get-hosted-zones:
