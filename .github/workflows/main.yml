@@ -44,10 +44,16 @@ jobs:
 
       - name: Backup acquisition
         run: |
-          if [ '${{ github.event_name }}' == 'schedule' ]; then
+          if [ '${{ github.event_name }}' == 'push' ]; then
             # aws route53 list-hosted-zones
             # 動的にやりたければ↑からホストゾーンID拾う
             aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
+              # JSONファイルを読み込み、その内容を出力
+            echo "リソースレコードセットのJSONデータ:"
+            cat maasapis-com.json
+
+            # GitHub Actionsの出力としても設定する場合
+            echo "::set-output name=json_data::$(cat maasapis-com.json | jq -Rsa .)"
           fi
 
       - name: Json file check
