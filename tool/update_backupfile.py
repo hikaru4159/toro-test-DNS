@@ -12,23 +12,27 @@ def convert_yaml(input_file_name, output_file_name):
     print("Loaded Data:", loaded_data)  # デバッグ用の出力
 
     # 新しい形式に変換
+
     changes = []
-    for record in loaded_data:
-        if 'AliasTarget' in record:
-            changes.append({
-                'Action': 'UPSERT',
-                'ResourceRecordSet': record
-            })
-        else:
-            changes.append({
-                'Action': 'UPSERT',
-                'ResourceRecordSet': {
-                    'Name': record['Name'],
-                    'ResourceRecords': record['ResourceRecords'],
-                    'TTL': record['TTL'],
-                    'Type': record['Type']
-                }
-            })
+    if isinstance(loaded_data, list):  # もしリストであれば
+        for record in loaded_data:
+            if 'AliasTarget' in record:
+                changes.append({
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': record
+                })
+            else:
+                changes.append({
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': {
+                        'Name': record['Name'],
+                        'ResourceRecords': record['ResourceRecords'],
+                        'TTL': record['TTL'],
+                        'Type': record['Type']
+                    }
+                })
+    else:
+        print("Error: Loaded data is not a list.")
 
     # 最終的な辞書を作成
     output_data = {'Changes': changes}
