@@ -1,0 +1,14 @@
+{
+    "HostedZones": [
+    "HostedZones": [
+        {
+            "Id": "/hostedzone/Z006710135TQK9WG7FQ05",
+            "Name": "handson.toro.toyota.",
+            "CallerReference": "terraform-20241201032353876400000001",
+            "Config": {
+                "Comment": "HandsOn",
+                "PrivateZone": false
+            },
+            "ResourceRecordSetCount": 2
+        }
+    }
