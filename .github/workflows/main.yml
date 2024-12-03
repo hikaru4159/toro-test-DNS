@@ -54,6 +54,8 @@ jobs:
 
             # GitHub Actionsの出力としても設定する場合
             echo "::set-output name=json_data::$(cat maasapis-com.json | jq -Rsa .)"
+          else
+            echo "スケジュール以外の処理実行"
           fi
 
       - name: Json file check
