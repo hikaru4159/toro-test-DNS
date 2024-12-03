@@ -1,0 +1,33 @@
+{
+    "ResourceRecordSets": [
+        {
+            "Name": "hikaru_test.com.",
+            "Type": "NS",
+            "TTL": 111,
+            "ResourceRecords": [
+                {
+                    "Value": "ns-1449.awsdns-53.org."
+                },
+                {
+                    "Value": "ns-984.awsdns-59.net."
+                },
+                {
+                    "Value": "ns-1567.awsdns-03.co.uk."
+                },
+                {
+                    "Value": "ns-197.awsdns-24.com."
+                }
+            ]
+        },
+        {
+            "Name": "hikaru_test.com.",
+            "Type": "SOA",
+            "TTL": 555,
+            "ResourceRecords": [
+                {
+                    "Value": "ns-1449.awsdns-53.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                }
+            ]
+        }
+    ]
+}
