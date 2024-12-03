@@ -78,6 +78,24 @@ jobs:
             if ! git diff --cached --quiet; then
               git commit -m "Update backup file"
               git push
+              echo "git push 完了したので、ホストゾーンの更新開始"
+            #ホストゾーンを更新する処理
+              if [ -f maasapis.com/maasapis-com.yaml ]; then
+                # YAMLをJSONに変換
+                python -c "import yaml, json; yaml_file='maasapis.com/maasapis-com.yaml'; json_file='maasapis-com-update.json'; data = yaml.safe_load(open(yaml_file)); json.dump(data, open(json_file, 'w'), indent=2)"
+                
+                # Route 53 のリソースレコードセットを更新
+                aws route53 change-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T --change-batch file://maasapis-com-update.json
+                
+                echo "Route 53 のリソースレコードセットを更新しました。"
+                
+                # 更新に使用したJSONファイルを削除
+                rm maasapis-com-update.json
+              else
+                echo "maasapis-com.yaml が存在しないため、更新処理をスキップします。"
+              fi
+
+
             else
               echo "変更がありません"
             fi
