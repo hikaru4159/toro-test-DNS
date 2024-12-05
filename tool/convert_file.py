@@ -11,25 +11,39 @@ def convert_yaml(input_file):
     with open(input_file, 'r', encoding='utf-8') as file:
         data = yaml.safe_load(file)
 
+    # デバッグ: データの構造を確認
+    print("Data loaded from YAML:")
+    print(data)
+
     # 新しい形式に変換
     changes = []
 
-    for record in data:
-        if 'AliasTarget' in record:
-            changes.append({
-                'Action': 'UPSERT',
-                'ResourceRecordSet': record
-            })
-        else:
-            changes.append({
-                'Action': 'UPSERT',
-                'ResourceRecordSet': {
-                    'Name': record['Name'],
-                    'ResourceRecords': record['ResourceRecords'],
-                    'TTL': record['TTL'],
-                    'Type': record['Type']
-                }
-            })
+    # 'ResourceRecordSets'キーのリストを処理
+    if 'ResourceRecordSets' in data:
+        for record in data['ResourceRecordSets']:
+            # デバッグ: 各レコードの内容を確認
+            print("Processing record:")
+            print(record)
+
+            # レコードが辞書型であることを確認
+            if isinstance(record, dict):
+                if 'AliasTarget' in record:
+                    changes.append({
+                        'Action': 'UPSERT',
+                        'ResourceRecordSet': record
+                    })
+                else:
+                    changes.append({
+                        'Action': 'UPSERT',
+                        'ResourceRecordSet': {
+                            'Name': record['Name'],
+                            'ResourceRecords': record['ResourceRecords'],
+                            'TTL': record['TTL'],
+                            'Type': record['Type']
+                        }
+                    })
+            else:
+                print("Warning: Record is not a dictionary:", record)
 
     # 最終的な辞書を作成
     output_data = {'Changes': changes}

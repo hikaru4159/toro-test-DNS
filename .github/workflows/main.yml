@@ -40,19 +40,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyyaml
+          pip install pyyaml jq
 
       - name: Backup acquisition
         run: |
           if [ '${{ github.event_name }}' == 'schedule' ]; then
-            # aws route53 list-hosted-zones
-            # 動的にやりたければ↑からホストゾーンID拾う
             aws route53 list-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240
-              # JSONファイルを読み込み、その内容を出力
             echo "リソースレコードセットのJSONデータ:"
             cat maasapis-com.json
-
-            # GitHub Actionsの出力としても設定する場合
             echo "::set-output name=json_data::$(cat maasapis-com.json | jq -Rsa .)"
           else
             echo "スケジュール以外の処理実行"
@@ -81,110 +76,34 @@ jobs:
               git commit -m "Update backup file"
               git push
               echo "git push 完了したので、ホストゾーンの更新開始"
-            #ホストゾーンを更新する処理
               if [ -f maasapis.com/maasapis-com.yaml ]; then
-                # YAMLをJSONに変換
                 python -c "import yaml, json; yaml_file='maasapis.com/maasapis-com.yaml'; json_file='maasapis-com-update.json'; data = yaml.safe_load(open(yaml_file)); json.dump(data, open(json_file, 'w'), indent=2)"
-                
-                # Route 53 のリソースレコードセットを更新
                 aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://maasapis-com-update.json
-                
                 echo "Route 53 のリソースレコードセットを更新しました。"
-                
-                # 更新に使用したJSONファイルを削除
                 rm maasapis-com-update.json
               else
                 echo "maasapis-com.yaml が存在しないため、更新処理をスキップします。"
               fi
-
-
             else
               echo "変更がありません"
             fi
           fi
 
-# name: Get Route 53 Hosted Zones
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   # schedule:
-#   #   - cron: '*/1 * * * *'  # 1分ごとに実行
-#         　　     * * * * *
-#              # | | | | |
-#              # | | | | +---- 日 (0 - 31)
-#              # | | | +------ 月 (1 - 12)
-#              # | | +-------- 曜日 (0 - 7) (日曜日は0または7)
-#              # | +---------- 時間 (0 - 23)
-#              # +------------ 分 (0 - 59)
-
-# permissions:
-#   id-token: write
-#   contents: write
-
-# jobs:
-#   get-hosted-zones:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Configure AWS Credentials
-#         id: configure-aws-credentials
-#         uses: aws-actions/configure-aws-credentials@v4
-#         with:
-#           role-to-assume: arn:aws:iam::157094121738:role/hikaru_OIDC_test
-#           aws-region: ap-northeast-1
-
-#       - name: List Route 53 Hosted Zones
-#         id: list-hosted-zones
-#         run: |
-#           if [ '${{ github.event_name }}' == 'push' ]; then
-#             aws route53 list-resource-record-sets --hosted-zone-id Z08453503RDFJHEMC447T > maasapis-com.json
-#           fi
-
-#       - name: Json file check
-#         env:
-#           GITHUB_MAIL: 41898282+github-actions[bot]@users.noreply.github.com
-#           GITHUB_NAME: github-actions[bot]
-#         run: |
-#           if [ ! -f maasapis-com.json ]; then
-#             echo "maasapis-com.jsonファイルが存在しないので終了"
-#             exit 0
-#           else
-#             # Pythonスクリプトを実行してYAMLファイルを生成
-#             if ! python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml; then
-#               echo "YAMLファイルへの変換に失敗しました"
-#               exit 1
-#             fi
+      - name: Process DELETE.json if exists
+        run: |
+          if [ -f DELETE.json ]; then
+            # 更新処理
+            aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://DELETE.json
+            echo "DELETE.json を使用してホストゾーンを更新しました。"
             
-#             # YAMLファイルの内容を出力として取得
-#             yaml_output=$(tail -n +3 maasapis-com.yaml)  # ここではYAMLファイルを直接読み込みます
-#             echo "YAML Output: $yaml_output"
-
-#             # GitHub Actionsの環境変数に出力を保存
-#             echo "yaml_output<<EOF" >> $GITHUB_ENV
-#             echo "$yaml_output" >> $GITHUB_ENV
-#             echo "EOF" >> $GITHUB_ENV  # EOFを新しい行で追加
-
-#             rm maasapis-com.json
-
-#             mv maasapis-com.yaml maasapis.com/
-
-#             git config --local user.email "${{ env.GITHUB_MAIL }}"
-#             git config --local user.name "${{ env.GITHUB_NAME }}"
-#             git add maasapis.com/maasapis-com.yaml
-
-#             if ! git diff --cached --quiet; then
-#               git commit -m "Update backup file"
-#               git push
-#             else
-#               echo "変更がありません"
-#             fi
-#           fi
-
-
-
-
+            # 削除したレコードの名前を出力
+            deleted_names=$(jq -r '.Changes[] | select(.Action=="DELETE") | .ResourceRecordSet.Name' DELETE.json)
+            for name in $deleted_names; do
+              echo "::notice::${name}レコードの削除が完了"
+            done
+            
+            # DELETE.json を削除
+            rm DELETE.json
+          else
+            echo "DELETE.json が存在しないため、処理をスキップします。"
+          fi
