@@ -36,7 +36,7 @@
             }
         },
         {
-            "Action": "UPSERT",
+            "Action": "DELETE",
             "ResourceRecordSet": {
                 "Name": "_c09806f951d71e2095a396e9885fffaa.hikaru-test.maasapis.com.",
                 "ResourceRecords": [
