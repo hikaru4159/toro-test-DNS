@@ -55,7 +55,9 @@ jobs:
 
       - name: Json file check
         run: |
-          if ! ls *.json 1> /dev/null 2>&1; then
+          # if ! ls *.json 1> /dev/null 2>&1; then
+          if ! find . -maxdepth 1 -type f -name "*.json" -not -name "DELETE.json" | grep -q .; then
+          
             echo "jsonファイルが存在しないので終了"
             exit 0
           else
