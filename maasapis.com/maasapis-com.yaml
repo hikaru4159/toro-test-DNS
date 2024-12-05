@@ -7,7 +7,7 @@ Changes:
     - Value: ns-1211.awsdns-23.org.
     - Value: ns-613.awsdns-12.net.
     - Value: ns-68.awsdns-08.com.
-    TTL: 172800
+    TTL: 300
     Type: NS
 - Action: UPSERT
   ResourceRecordSet:
@@ -22,5 +22,5 @@ Changes:
     Name: _c09806f951d71e2095a396e9885fffaa.hikaru-test.maasapis.com.
     ResourceRecords:
     - Value: _8c298225cd096b4f1e0de16ad9456df8.zfyfvmchrl.acm-validations.aws.
-    TTL: 60
+    TTL: 150
     Type: CNAME
