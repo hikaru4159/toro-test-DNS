@@ -3,7 +3,7 @@
         {
             "Name": "hikaru-test.maasapis.com.",
             "Type": "NS",
-            "TTL": 172800,
+            "TTL": 300,
             "ResourceRecords": [
                 {
                     "Value": "ns-1847.awsdns-38.co.uk."
@@ -32,10 +32,10 @@
         {
             "Name": "_c09806f951d71e2095a396e9885fffaa.hikaru-test.maasapis.com.",
             "Type": "CNAME",
-            "TTL": 60,
+            "TTL": 150,
             "ResourceRecords": [
                 {
-                    "Value": "_8c298225cd096b4f1e0de16ad9456df8.zfyfvmchrl.acm-validations.aws."
+                    "Value": "_8c298225cd096b4f1e0de16ad9456df8.zfyfvmchrl.acm-validations.aws."     
                 }
             ]
         }
