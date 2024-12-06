@@ -56,10 +56,10 @@ jobs:
       - name: Json file check
         run: |
           # if ! ls *.json 1> /dev/null 2>&1; then
-          if ls UPSERT-maasapis-com.json 1> /dev/null 2>&1; then
+          if ls *-maasapis-com.json 1> /dev/null 2>&1; then
 
             # JSONファイルをYAML形式に変換し、一時ファイルに保存
-            python tool/convert_yaml.py UPSERT-maasapis-com.json maasapis-com.yaml maasapis-com-update.json
+            python tool/UP_convert_yaml.py UPSERT-maasapis-com.json maasapis-com.yaml maasapis-com-update.json
 
             # maasapis-com-update.jsonの存在確認
             if [ -f maasapis-com-update.json ]; then
@@ -91,7 +91,7 @@ jobs:
             fi
 
           else
-              echo "UPSERT-maasapis-com.json が存在しません。"
+              echo "**-maasapis-com.json が存在しません。"
           fi
 
       - name: Process DELETE.json if exists
