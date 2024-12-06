@@ -29,11 +29,23 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
                 if not (ref_record["Name"] == record_name and ref_record["Type"] == record_type)
             ]
 
+        # 削除後のレコードを確認
+        print(f"Updated ResourceRecordSets: {reference_data['ResourceRecordSets']}")
+
         # 更新されたreference_dataをYAML形式で出力
         with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
             yaml.dump(reference_data, yaml_outfile, default_flow_style=False, allow_unicode=True)
 
         print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
+
+        # ここで出力用のデータを作成
+        output_data = {'Changes': [{'Action': 'DELETE', 'ResourceRecordSet': record} for record in reference_data["ResourceRecordSets"]]}
+
+        # JSON形式で出力
+        with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
+            json.dump(output_data, json_outfile, indent=2)
+
+        print(f"{output_json_file_name} has been created.")  # 更新確認の出力
 
     else:  # UPSERTの場合の処理
         # JSONデータを直接YAML形式に変換して出力
