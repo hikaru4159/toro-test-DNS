@@ -3,7 +3,7 @@
         {
             "Name": "hikaru-test.maasapis.com.",
             "Type": "NS",
-            "TTL": 300,
+            "TTL": 333,
             "ResourceRecords": [
                 {
                     "Value": "ns-1847.awsdns-38.co.uk."

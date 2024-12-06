@@ -56,40 +56,39 @@ jobs:
       - name: Json file check
         run: |
           # if ! ls *.json 1> /dev/null 2>&1; then
-          if ls UPSERT-maasapis-com.json 1> /dev/null 2>&1; then
+          if ! find . -maxdepth 1 -type f -name "*.json" -not -name "DELETE.json" | grep -q .; then
+          
+            echo "jsonファイルが存在しないので終了"
+            exit 0
+          else
+            python tool/update_backupfile.py maasapis-com.json maasapis-com.yaml
+            rm maasapis-com.json
 
-            # JSONファイルをYAML形式に変換し、一時ファイルに保存
-            python tool/convert_yaml.py UPSERT-maasapis-com.json maasapis-com-update.yaml maasapis-com-update.json
+            mv maasapis-com.yaml maasapis.com/
 
-            # maasapis-com-update.jsonの存在確認
-            if [ -f maasapis-com-update.json ]; then
-                # Route 53のリソースレコードセットを更新
+            git config --local user.email "example@example.com"
+            git config --local user.name "example"
+            if [ ! -f maasapis-com.json ]; then
+                if git ls-files --error-unmatch maasapis-com.json > /dev/null 2>&1; then
+                    git rm maasapis-com.json
+                fi
+            fi
+            git add maasapis.com/maasapis-com.yaml
+            if ! git diff --cached --quiet; then
+              git commit -m "Update backup file"
+              git push
+              echo "git push 完了したので、ホストゾーンの更新開始"
+              if [ -f maasapis.com/maasapis-com.yaml ]; then
+                python -c "import yaml, json; yaml_file='maasapis.com/maasapis-com.yaml'; json_file='maasapis-com-update.json'; data = yaml.safe_load(open(yaml_file)); json.dump(data, open(json_file, 'w'), indent=2)"
                 aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://maasapis-com-update.json
                 echo "Route 53 のリソースレコードセットを更新しました。"
-                
-                # YAMLファイルをリポジトリに追加
-                git config --local user.email "example@example.com"
-                git config --local user.name "example"
-                git add maasapis-com-update.yaml
-
-                if ! git diff --cached --quiet; then
-                    git commit -m "Update backup file"
-                    git push
-                    echo "git push 完了しました。"
-                else
-                    echo "変更がありません"
-                fi
-
-                # 一時ファイルを削除
-                rm maasapis-com-update.yaml
-                rm UPSERT-maasapis-com.json
                 rm maasapis-com-update.json
+              else
+                echo "maasapis-com.yaml が存在しないため、更新処理をスキップします。"
+              fi
             else
-                echo "maasapis-com-update.json の生成に失敗しました。"
+              echo "変更がありません"
             fi
-
-          else
-              echo "UPSERT-maasapis-com.json が存在しません。"
           fi
 
       - name: Process DELETE.json if exists
