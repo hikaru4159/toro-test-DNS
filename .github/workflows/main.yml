@@ -72,7 +72,7 @@ jobs:
                 
                 git config --local user.email "example@example.com"
                 git config --local user.name "example"
-                git add maasapis-com.yaml
+                git add maasapis.com/maasapis-com-update.yaml  # 正しいファイルパスを指定
 
                 if ! git diff --cached --quiet; then
                     git commit -m "Update backup file"
