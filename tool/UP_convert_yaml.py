@@ -5,7 +5,7 @@ import os
 
 def convert_record_sets_to_changes(record_sets, action):
     changes = []
-    for record in record_sets:
+    for record in record_sets["ResourceRecordSets"]:
         if 'AliasTarget' in record:
             changes.append({
                 'Action': action,
