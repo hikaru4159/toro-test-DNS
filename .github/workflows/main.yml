@@ -94,8 +94,10 @@ jobs:
               fi
 
             else
-                echo "**-maasapis-com.json が存在しません。"
+                echo "*-maasapis-com.json が存在しません。"
             fi
+          done  # forループを閉じる
+
 
       - name: Process DELETE.json if exists
         run: |
