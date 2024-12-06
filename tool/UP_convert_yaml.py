@@ -6,15 +6,21 @@ import os
 def convert_record_sets_to_changes(record_sets, action):
     changes = []
     for record in record_sets:
-        changes.append({
-            'Action': action,
-            'ResourceRecordSet': {
-                'Name': record['Name'],
-                'Type': record['Type'],
-                'TTL': record.get('TTL', 300),  # TTLがない場合はデフォルト300秒
-                'ResourceRecords': record['ResourceRecords']
-            }
-        })
+        if 'AliasTarget' in record:
+            changes.append({
+                'Action': action,
+                'ResourceRecordSet': record
+            })
+        else:
+            changes.append({
+                'Action': action,
+                'ResourceRecordSet': {
+                    'Name': record['Name'],
+                    'ResourceRecords': record['ResourceRecords'],
+                    'TTL': record['TTL'],
+                    'Type': record['Type']
+                }
+            })
     return changes
 
 def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
@@ -75,7 +81,7 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
 
         print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
 
-        # 新しい形式に変換（共通関数を使用）
+        # 新しい形式に変換（動的データ取得の部分）
         changes = convert_record_sets_to_changes(data["ResourceRecordSets"], action_prefix)
 
         # 最終的な辞書を作成
