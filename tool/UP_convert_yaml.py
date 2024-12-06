@@ -5,7 +5,7 @@ import os
 
 def convert_record_sets_to_changes(record_sets, action):
     changes = []
-    for record in record_sets["ResourceRecordSets"]:
+    for record in record_sets:
         if 'AliasTarget' in record:
             changes.append({
                 'Action': action,
@@ -96,6 +96,10 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
     # YAMLファイルの内容を標準出力に出力（GitHub Actionsで取得できるように）
     print("---")
     print(yaml.dump(reference_data if action_prefix == "DELETE" else data, allow_unicode=True))  # 元のデータのYAML出力
+
+    # 最終的なJSONデータを標準出力に出力
+    print("---")
+    print(json.dumps(output_data, indent=2))  # 最終的なJSONデータの出力
 
 if __name__ == "__main__":
     input_file_name = sys.argv[1]
