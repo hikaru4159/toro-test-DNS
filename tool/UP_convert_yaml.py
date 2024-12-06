@@ -59,7 +59,7 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
         print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
 
         # 新しい形式に変換（共通関数を使用）
-        changes = convert_record_sets_to_changes(reference_data["ResourceRecordSets"], 'DELETE')
+        changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'DELETE')
 
         # 最終的な辞書を作成
         output_data = {'Changes': changes}
