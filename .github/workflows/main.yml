@@ -55,44 +55,47 @@ jobs:
 
       - name: Json file check
         run: |
-          # if ! ls *.json 1> /dev/null 2>&1; then
-          if ls *-maasapis-com.json 1> /dev/null 2>&1; then
+          # マッチするファイルを見つける
+          for json_file in *-maasapis-com.json; do
+            if [[ -f $json_file ]]; then
+                # JSONファイルが見つかった場合の処理
+                echo "Found JSON file: $json_file"
 
-            # JSONファイルをYAML形式に変換し、一時ファイルに保存
-            python tool/UP_convert_yaml.py UPSERT-maasapis-com.json maasapis-com.yaml maasapis-com-update.json
+                # JSONファイルをYAML形式に変換し、一時ファイルに保存
+                python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
 
-            # maasapis-com-update.jsonの存在確認
-            if [ -f maasapis-com-update.json ]; then
-                # Route 53のリソースレコードセットを更新
-                aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://maasapis-com-update.json
-                echo "Route 53 のリソースレコードセットを更新しました。"
-                
-                # YAMLファイルをリポジトリに追加
-                mv maasapis-com.yaml maasapis.com/
-                
-                git config --local user.email "example@example.com"
-                git config --local user.name "example"
-                git add maasapis.com/maasapis-com.yaml  # 正しいファイルパスを指定
+              # maasapis-com-update.jsonの存在確認
+              if [ -f maasapis-com-update.json ]; then
+                  # Route 53のリソースレコードセットを更新
+                  aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://maasapis-com-update.json
+                  echo "Route 53 のリソースレコードセットを更新しました。"
+                  
+                  # YAMLファイルをリポジトリに追加
+                  mv maasapis-com.yaml maasapis.com/
+                  
+                  git config --local user.email "example@example.com"
+                  git config --local user.name "example"
+                  git add maasapis.com/maasapis-com.yaml  # 正しいファイルパスを指定
 
-                if ! git diff --cached --quiet; then
-                    git commit -m "Update backup file"
-                    git push
-                    echo "git push 完了しました。"
-                else
-                    echo "変更がありません"
-                fi
+                  if ! git diff --cached --quiet; then
+                      git commit -m "Update backup file"
+                      git push
+                      echo "git push 完了しました。"
+                  else
+                      echo "変更がありません"
+                  fi
 
-                # 一時ファイルを削除
-                # rm maasapis-com.yaml
-                rm UPSERT-maasapis-com.json
-                rm maasapis-com-update.json
+                  # 一時ファイルを削除
+                  # rm maasapis-com.yaml
+                  rm UPSERT-maasapis-com.json
+                  rm maasapis-com-update.json
+              else
+                  echo "maasapis-com-update.json の生成に失敗しました。"
+              fi
+
             else
-                echo "maasapis-com-update.json の生成に失敗しました。"
+                echo "**-maasapis-com.json が存在しません。"
             fi
-
-          else
-              echo "**-maasapis-com.json が存在しません。"
-          fi
 
       - name: Process DELETE.json if exists
         run: |
