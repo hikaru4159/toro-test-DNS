@@ -83,7 +83,7 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                rm maasapis-com.yaml
+                # rm maasapis-com.yaml
                 rm UPSERT-maasapis-com.json
                 rm maasapis-com-update.json
             else
