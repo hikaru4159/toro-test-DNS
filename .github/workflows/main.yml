@@ -59,7 +59,7 @@ jobs:
           if ls UPSERT-maasapis-com.json 1> /dev/null 2>&1; then
 
             # JSONファイルをYAML形式に変換し、一時ファイルに保存
-            python tool/convert_yaml.py UPSERT-maasapis-com.json maasapis-com-update.yaml maasapis-com-update.json
+            python tool/convert_yaml.py UPSERT-maasapis-com.json maasapis-com.yaml maasapis-com-update.json
 
             # maasapis-com-update.jsonの存在確認
             if [ -f maasapis-com-update.json ]; then
@@ -68,6 +68,8 @@ jobs:
                 echo "Route 53 のリソースレコードセットを更新しました。"
                 
                 # YAMLファイルをリポジトリに追加
+                mv maasapis-com.yaml maasapis.com/
+                
                 git config --local user.email "example@example.com"
                 git config --local user.name "example"
                 git add maasapis-com-update.yaml
@@ -81,7 +83,7 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                rm maasapis-com-update.yaml
+                rm maasapis-com.yaml
                 rm UPSERT-maasapis-com.json
                 rm maasapis-com-update.json
             else

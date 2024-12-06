@@ -6,12 +6,15 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
     with open(input_file_name, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
-    yaml_data = yaml.dump(data, default_flow_style=False, allow_unicode=True)
-    loaded_data = yaml.safe_load(yaml_data)
+    # JSONデータを直接YAML形式に変換して出力
+    with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
+        yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
+
+    print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
 
     # 新しい形式に変換
     changes = []
-    for record in loaded_data["ResourceRecordSets"]:
+    for record in data["ResourceRecordSets"]:
         if 'AliasTarget' in record:
             changes.append({
                 'Action': 'UPSERT',
@@ -31,12 +34,6 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
     # 最終的な辞書を作成
     output_data = {'Changes': changes}
 
-    # YAML形式で出力
-    with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
-        yaml.dump(output_data, yaml_outfile, allow_unicode=True)
-
-    print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
-
     # JSON形式で出力
     with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
         json.dump(output_data, json_outfile, indent=2)
@@ -45,7 +42,7 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
 
     # YAMLファイルの内容を標準出力に出力（GitHub Actionsで取得できるように）
     print("---")
-    print(yaml.dump(output_data, allow_unicode=True))
+    print(yaml.dump(data, allow_unicode=True))  # 元のデータのYAML出力
 
 if __name__ == "__main__":
     input_file_name = sys.argv[1]
