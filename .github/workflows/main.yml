@@ -87,7 +87,7 @@ jobs:
 
                   # 一時ファイルを削除
                   # rm maasapis-com.yaml
-                  rm UPSERT-maasapis-com.json
+                  rm "$json_file"
                   rm maasapis-com-update.json
               else
                   echo "maasapis-com-update.json の生成に失敗しました。"
