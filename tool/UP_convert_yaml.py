@@ -3,6 +3,20 @@ import yaml
 import sys
 import os
 
+def convert_record_sets_to_changes(record_sets, action):
+    changes = []
+    for record in record_sets:
+        changes.append({
+            'Action': action,
+            'ResourceRecordSet': {
+                'Name': record['Name'],
+                'Type': record['Type'],
+                'TTL': record.get('TTL', 300),  # TTLがない場合はデフォルト300秒
+                'ResourceRecords': record['ResourceRecords']
+            }
+        })
+    return changes
+
 def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
     # Actionの決定
     action_prefix = "DELETE" if input_file_name.startswith("DELETE") else "UPSERT"
@@ -38,8 +52,11 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
 
         print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
 
-        # ここで出力用のデータを作成
-        output_data = {'Changes': [{'Action': 'DELETE', 'ResourceRecordSet': record} for record in reference_data["ResourceRecordSets"]]}
+        # 新しい形式に変換（共通関数を使用）
+        changes = convert_record_sets_to_changes(reference_data["ResourceRecordSets"], 'DELETE')
+
+        # 最終的な辞書を作成
+        output_data = {'Changes': changes}
 
         # JSON形式で出力
         with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
@@ -58,18 +75,8 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
 
         print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
 
-        # 新しい形式に変換
-        changes = []
-        for record in data["ResourceRecordSets"]:
-            changes.append({
-                'Action': action_prefix,
-                'ResourceRecordSet': record if 'AliasTarget' in record else {
-                    'Name': record['Name'],
-                    'ResourceRecords': record['ResourceRecords'],
-                    'TTL': record['TTL'],
-                    'Type': record['Type']
-                }
-            })
+        # 新しい形式に変換（共通関数を使用）
+        changes = convert_record_sets_to_changes(data["ResourceRecordSets"], action_prefix)
 
         # 最終的な辞書を作成
         output_data = {'Changes': changes}
