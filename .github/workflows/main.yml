@@ -56,30 +56,56 @@ jobs:
       - name: Json file check
         run: |
           # マッチするファイルを見つける
-          for json_file in *-maasapis-com.json; do
-            if [[ -f $json_file ]]; then
-              echo "Found JSON file: $json_file"
+          # for json_file in *-maasapis-com.json; do
+          if [[ -e ./*-maasapis-com.json ]]; then
+            base_jason=*-maasapis-com.json
+            # if [[ -f $json_file ]]; then
+            echo "Found JSON file: $base_jason"
 
-              # JSONファイルをYAML形式に変換し、一時ファイルに保存
-              python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json
+            # JSONファイルをYAML形式に変換し、一時ファイルに保存
+            python tool/UP_convert_yaml.py "$base_jason" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json
 
-              # maasapis-com-update.jsonの存在確認
-              if [ -f maasapis-com-delete.json ]; then
-                # Route 53のリソースレコードセットを削除
-                aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-delete.json
-                echo "Route 53 のリソースレコードセットを削除しました。"
-                rm maasapis-com-delete.json
+            # maasapis-com-update.jsonの存在確認
+            if [ -f maasapis-com-delete.json ]; then
+              # Route 53のリソースレコードセットを削除
+              aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-delete.json
+              echo "Route 53 のリソースレコードセットを削除しました。"
+              rm maasapis-com-delete.json
+            else
+              echo "削除対象がない為DELETEをスキップします"
+            fi
+
+            if [ -f maasapis-com-update.json ]; then
+              # 新しいレコードを追加するために再度変換
+              # python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
+              # Route 53のリソースレコードセットを更新
+              aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-update.json
+              echo "Route 53 のリソースレコードセットを更新しました。"
+
+              # YAMLファイルをリポジトリに追加
+              mv maasapis-com.yaml maasapis.com/
+
+              git config --local user.email "example@example.com"
+              git config --local user.name "example"
+              git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
+
+              if ! git diff --cached --quiet; then
+                git commit -m "Update backup file"
+                git push
+                echo "git push 完了しました。"
               else
-                echo "削除対象がない為DELETEをスキップします"
+                echo "変更がありません"
               fi
 
-              if [ -f maasapis-com-update.json ]; then
-                # 新しいレコードを追加するために再度変換
-                # python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
-                # Route 53のリソースレコードセットを更新
-                aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-update.json
-                echo "Route 53 のリソースレコードセットを更新しました。"
-
+              # 一時ファイルを削除
+              rm base_jason
+              rm maasapis-com-update.json
+              if [[ -f $json_file ]]; then
+                echo "$json_file の削除に失敗しました"
+              fi
+            else
+              echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
+              if [ -f maasapis-com.yaml ]; then
                 # YAMLファイルをリポジトリに追加
                 mv maasapis-com.yaml maasapis.com/
 
@@ -96,38 +122,13 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                rm "$json_file"
+                rm base_jason
                 rm maasapis-com-update.json
-                if [[ -f $json_file ]]; then
-                  echo "$json_file の削除に失敗しました"
-                fi
               else
-                echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
-                if [ -f maasapis-com.yaml ]; then
-                  # YAMLファイルをリポジトリに追加
-                  mv maasapis-com.yaml maasapis.com/
-
-                  git config --local user.email "example@example.com"
-                  git config --local user.name "example"
-                  git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
-
-                  if ! git diff --cached --quiet; then
-                    git commit -m "Update backup file"
-                    git push
-                    echo "git push 完了しました。"
-                  else
-                    echo "変更がありません"
-                  fi
-
-                  # 一時ファイルを削除
-                  rm "$json_file"
-                  rm maasapis-com-update.json
-                else
-                  echo "更新用yamlが見つかりません"
-                fi
+                echo "更新用yamlが見つかりません"
               fi
-            else
-              echo "*-maasapis-com.json が存在しません。"
             fi
-          done # forループを閉じる
+          else
+            echo "*-maasapis-com.json が存在しません。"
+          fi
 
