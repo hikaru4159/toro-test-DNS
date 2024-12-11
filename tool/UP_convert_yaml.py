@@ -6,7 +6,11 @@ import os
 def convert_record_sets_to_changes(record_sets, action):
     changes = []
     for record in record_sets:
-        if 'AliasTarget' in record:
+        # SOAレコードとNSレコードを除外
+        if record['Type'] in ['SOA', 'NS']:
+            continue
+
+        elif 'AliasTarget' in record:
             changes.append({
                 'Action': action,
                 'ResourceRecordSet': record
@@ -34,15 +38,18 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, o
 
     # すべてのレコードを削除するための変更を作成
     delete_changes = convert_record_sets_to_changes(reference_data["ResourceRecordSets"], 'DELETE')
-
+    # データが空でない場合にのみ削除処理を行う
+    if delete_changes:
     # 最終的な削除データを作成
-    delete_output_data = {'Changes': delete_changes}
+        delete_output_data = {'Changes': delete_changes}
 
-    # 削除アクションをJSON形式で出力
-    with open(output_DEL_json_name, 'w', encoding='utf-8') as json_outfile:
-        json.dump(delete_output_data, json_outfile, indent=2)
+        # 削除アクションをJSON形式で出力
+        with open(output_DEL_json_name, 'w', encoding='utf-8') as json_outfile:
+            json.dump(delete_output_data, json_outfile, indent=2)
 
-    print(f"{output_DEL_json_name} has been created for DELETE action.") # 更新確認の出力
+        print(f"{output_DEL_json_name} has been created for DELETE action.") # 更新確認の出力
+    else:
+        print(" empty delete_changes data")
 
     # その後、UPSERTのための変更を作成
     changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'UPSERT')

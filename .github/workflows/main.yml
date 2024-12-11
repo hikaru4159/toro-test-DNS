@@ -64,11 +64,15 @@ jobs:
               python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json
 
               # maasapis-com-update.jsonの存在確認
-              if [ -f maasapis-com-delete.json ] && [ -f maasapis-com-update.json ]; then
+              if [ -f maasapis-com-delete.json ]; then
                 # Route 53のリソースレコードセットを削除
                 aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-delete.json
                 echo "Route 53 のリソースレコードセットを削除しました。"
-
+              else
+                echo "削除対象がない為DELETEをスキップします"
+              fi
+              
+              if [ -f maasapis-com-update.json ]; then
                 # 新しいレコードを追加するために再度変換
                 # python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
 
