@@ -101,7 +101,7 @@ jobs:
                 rm maasapis-com-update.json
                 
               else
-                echo "maasapis-com-update.json の生成に失敗しました。"
+                echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
               fi
             else
               echo "*-maasapis-com.json が存在しません。"
