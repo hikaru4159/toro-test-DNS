@@ -53,7 +53,7 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, o
         return  # 何も削除しない場合は処理を中断
     # その後、UPSERTのための変更を作成
     changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'UPSERT')
-    # 更新予定の内容がNSとSOAのみの場合は更新処理を行わない
+    # 更新予定の内容がNSとSOAのみの場合は更新処理を行わない(これがないとエラーになる)
     if all(record['Type'] in ['NS', 'SOA'] for record in data["ResourceRecordSets"]):
         print("Update data contains only NS and SOA records; skipping update action.")
         return
