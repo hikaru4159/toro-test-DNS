@@ -59,7 +59,8 @@ jobs:
           # for json_file in *-maasapis-com.json; do
           echo "Current directory contents:"
           ls -l
-          if [[ -e ./*-maasapis-com.json ]]; then
+          if ls *-maasapis-com.json 1> /dev/null 2>&1; then
+          # if [[ -e ./*-maasapis-com.json ]]; then
             base_jason=*-maasapis-com.json
             # if [[ -f $json_file ]]; then
             echo "Found JSON file: $base_jason"
