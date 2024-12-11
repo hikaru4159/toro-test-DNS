@@ -23,22 +23,26 @@ def convert_record_sets_to_changes(record_sets, action):
             })
     return changes
 
-def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
+def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, output_UP_json_name):
+    # reference YAMLファイルを読み込む
+    reference_yaml_file = "maasapis.com/maasapis-com.yaml"
+    with open(reference_yaml_file, 'r', encoding='utf-8') as ref_file:
+        reference_data = yaml.safe_load(ref_file)
     # JSONファイルからデータを読み込む
     with open(input_file_name, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     # すべてのレコードを削除するための変更を作成
-    delete_changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'DELETE')
+    delete_changes = convert_record_sets_to_changes(reference_data["ResourceRecordSets"], 'DELETE')
 
     # 最終的な削除データを作成
     delete_output_data = {'Changes': delete_changes}
 
     # 削除アクションをJSON形式で出力
-    with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
+    with open(output_DEL_json_name, 'w', encoding='utf-8') as json_outfile:
         json.dump(delete_output_data, json_outfile, indent=2)
 
-    print(f"{output_json_file_name} has been created for DELETE action.") # 更新確認の出力
+    print(f"{output_DEL_json_name} has been created for DELETE action.") # 更新確認の出力
 
     # その後、UPSERTのための変更を作成
     changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'UPSERT')
@@ -47,10 +51,10 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
     output_data = {'Changes': changes}
 
     # JSON形式で出力
-    with open(output_json_file_name, 'a', encoding='utf-8') as json_outfile:
+    with open(output_UP_json_name, 'a', encoding='utf-8') as json_outfile:
         json.dump(output_data, json_outfile, indent=2)
 
-    print(f"{output_json_file_name} has been updated for UPSERT action.") # 更新確認の出力
+    print(f"{output_UP_json_name} has been updated for UPSERT action.") # 更新確認の出力
 
     # YAML形式で出力
     with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
@@ -65,5 +69,6 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
 if __name__ == "__main__":
     input_file_name = sys.argv[1]
     output_yaml_file_name = sys.argv[2]
-    output_json_file_name = sys.argv[3]
-    convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name)
+    output_DEL_json_name = sys.argv[3]
+    output_UP_json_name = sys.argv[4]
+    convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, output_UP_json_name)
