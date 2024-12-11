@@ -98,7 +98,8 @@ jobs:
                 # 一時ファイルを削除
                 rm "$json_file"
                 rm maasapis-com-update.json
-                
+                if [[ -f $json_file ]]; then
+                  echo "$json_file の削除に失敗しました"
               else
                 echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
                 if [ -f maasapis-com.yaml ]; then
