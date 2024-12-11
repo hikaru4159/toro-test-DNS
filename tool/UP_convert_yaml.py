@@ -54,28 +54,36 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, o
     # その後、UPSERTのための変更を作成
     changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'UPSERT')
     # 更新予定の内容がNSとSOAのみの場合は更新処理を行わない(これがないとエラーになる)
-    if all(record['Type'] in ['NS', 'SOA'] for record in data["ResourceRecordSets"]):
+    if not all(record['Type'] in ['NS', 'SOA'] for record in data["ResourceRecordSets"]):
+        # 最終的なUPSERTデータを作成
+        output_data = {'Changes': changes}
+
+        # JSON形式で出力
+        with open(output_UP_json_name, 'a', encoding='utf-8') as json_outfile:
+            json.dump(output_data, json_outfile, indent=2)
+
+        print(f"{output_UP_json_name} has been updated for UPSERT action.") # 更新確認の出力
+
+        # YAML形式で出力
+        with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
+            yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
+
+        print(f"{output_yaml_file_name} has been updated.") # 更新確認の出力
+
+        # YAMLファイルの内容を標準出力に出力
+        print("---")
+        print(yaml.dump(data, allow_unicode=True)) # 元のデータのYAML出力
+    else:
+        # YAML形式で出力
+        with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
+            yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
+
+        print(f"{output_yaml_file_name} has been updated.") # 更新確認の出力
+
+        # YAMLファイルの内容を標準出力に出力
+        print("---")
+        print(yaml.dump(data, allow_unicode=True)) # 元のデータのYAML出力
         print("Update data contains only NS and SOA records; skipping update action.")
-        return
-    
-    # 最終的なUPSERTデータを作成
-    output_data = {'Changes': changes}
-
-    # JSON形式で出力
-    with open(output_UP_json_name, 'a', encoding='utf-8') as json_outfile:
-        json.dump(output_data, json_outfile, indent=2)
-
-    print(f"{output_UP_json_name} has been updated for UPSERT action.") # 更新確認の出力
-
-    # YAML形式で出力
-    with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
-        yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
-
-    print(f"{output_yaml_file_name} has been updated.") # 更新確認の出力
-
-    # YAMLファイルの内容を標準出力に出力
-    print("---")
-    print(yaml.dump(data, allow_unicode=True)) # 元のデータのYAML出力
 
 if __name__ == "__main__":
     input_file_name = sys.argv[1]
