@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-  schedule:
+  # schedule:
     # 定期実行する時間 +9:00すると日本時間
-    - cron: '30 6 * * *'
+    # - cron: '30 6 * * *'
 
 permissions:
   id-token: write
