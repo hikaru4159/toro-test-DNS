@@ -61,7 +61,7 @@ jobs:
           ls -l
           if ls *-maasapis-com.json 1> /dev/null 2>&1; then
           # if [[ -e ./*-maasapis-com.json ]]; then
-            base_jason=*-maasapis-com.json
+            base_jason=$"*-maasapis-com.json"
             # if [[ -f $json_file ]]; then
             echo "Found JSON file: $base_jason"
 
