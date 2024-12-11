@@ -68,10 +68,11 @@ jobs:
                 # Route 53のリソースレコードセットを削除
                 aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-delete.json
                 echo "Route 53 のリソースレコードセットを削除しました。"
+                rm maasapis-com-delete.json
               else
                 echo "削除対象がない為DELETEをスキップします"
               fi
-              
+
               if [ -f maasapis-com-update.json ]; then
                 # 新しいレコードを追加するために再度変換
                 # python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
@@ -98,7 +99,7 @@ jobs:
                 # 一時ファイルを削除
                 rm "$json_file"
                 rm maasapis-com-update.json
-                rm maasapis-com-delete.json
+                
               else
                 echo "maasapis-com-update.json の生成に失敗しました。"
               fi
