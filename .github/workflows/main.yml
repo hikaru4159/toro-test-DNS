@@ -76,7 +76,6 @@ jobs:
               if [ -f maasapis-com-update.json ]; then
                 # 新しいレコードを追加するために再度変換
                 # python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
-
                 # Route 53のリソースレコードセットを更新
                 aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-update.json
                 echo "Route 53 のリソースレコードセットを更新しました。"
@@ -98,6 +97,7 @@ jobs:
 
                 # 一時ファイルを削除
                 rm "$json_file"
+                rm ./"$json_file"
                 rm maasapis-com-update.json
                 
               else
