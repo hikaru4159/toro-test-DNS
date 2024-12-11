@@ -102,31 +102,28 @@ jobs:
                 
               else
                 echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
-                try
-                  if [ -f maasapis-com.yaml ]; then
-                    # YAMLファイルをリポジトリに追加
-                    mv maasapis-com.yaml maasapis.com/
+                if [ -f maasapis-com.yaml ]; then
+                  # YAMLファイルをリポジトリに追加
+                  mv maasapis-com.yaml maasapis.com/
 
-                    git config --local user.email "example@example.com"
-                    git config --local user.name "example"
-                    git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
+                  git config --local user.email "example@example.com"
+                  git config --local user.name "example"
+                  git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
 
-                    if ! git diff --cached --quiet; then
-                      git commit -m "Update backup file"
-                      git push
-                      echo "git push 完了しました。"
-                    else
-                      echo "変更がありません"
-                    fi
-
-                    # 一時ファイルを削除
-                    rm "$json_file"
-                    rm maasapis-com-update.json
+                  if ! git diff --cached --quiet; then
+                    git commit -m "Update backup file"
+                    git push
+                    echo "git push 完了しました。"
                   else
-                    echo "更新用yamlが見つかりません"
+                    echo "変更がありません"
                   fi
-                except
-                echo "git pushで何かのエラーに遭遇"
+
+                  # 一時ファイルを削除
+                  rm "$json_file"
+                  rm maasapis-com-update.json
+                else
+                  echo "更新用yamlが見つかりません"
+                fi
               fi
             else
               echo "*-maasapis-com.json が存在しません。"
