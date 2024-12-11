@@ -97,7 +97,6 @@ jobs:
 
                 # 一時ファイルを削除
                 rm "$json_file"
-                rm ~/UPSERT-maasapis-com.json
                 rm maasapis-com-update.json
                 
               else
