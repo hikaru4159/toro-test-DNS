@@ -50,7 +50,6 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, o
         print(f"{output_DEL_json_name} has been created for DELETE action.") # 更新確認の出力
     else:
         print(" empty delete_changes data")
-        return  # 何も削除しない場合は処理を中断
     # その後、UPSERTのための変更を作成
     changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'UPSERT')
     # 更新予定の内容がNSとSOAのみの場合は更新処理を行わない(これがないとエラーになる)
