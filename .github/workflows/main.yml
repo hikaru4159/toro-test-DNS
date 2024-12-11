@@ -45,7 +45,7 @@ jobs:
       - name: Backup acquisition
         run: |
           if [ '${{ github.event_name }}' == 'schedule' ]; then
-            aws route53 list-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240
+            aws route53 list-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P
             echo "リソースレコードセットのJSONデータ:"
             cat maasapis-com.json
             echo "::set-output name=json_data::$(cat maasapis-com.json | jq -Rsa .)"
@@ -67,7 +67,7 @@ jobs:
               # maasapis-com-update.jsonの存在確認
               if [ -f maasapis-com-update.json ]; then
                   # Route 53のリソースレコードセットを更新
-                  aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://maasapis-com-update.json
+                  aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-update.json
                   echo "Route 53 のリソースレコードセットを更新しました。"
                   
                   # YAMLファイルをリポジトリに追加
@@ -103,7 +103,7 @@ jobs:
         run: |
           if [ -f DELETE.json ]; then
             # 更新処理
-            aws route53 change-resource-record-sets --hosted-zone-id Z098170429JT06TAXQ240 --change-batch file://DELETE.json
+            aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://DELETE.json
             echo "DELETE.json を使用してホストゾーンを更新しました。"
             
             # 削除したレコードの名前を出力
