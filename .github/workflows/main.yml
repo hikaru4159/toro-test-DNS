@@ -57,6 +57,7 @@ jobs:
         run: |
           # マッチするファイルを見つける
           # for json_file in *-maasapis-com.json; do
+          echo "Current directory contents:"ls -l
           if [[ -e ./*-maasapis-com.json ]]; then
             base_jason=*-maasapis-com.json
             # if [[ -f $json_file ]]; then
