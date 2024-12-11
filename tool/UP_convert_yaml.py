@@ -24,82 +24,43 @@ def convert_record_sets_to_changes(record_sets, action):
     return changes
 
 def convert_yaml(input_file_name, output_yaml_file_name, output_json_file_name):
-    # Actionの決定
-    action_prefix = "DELETE" if input_file_name.startswith("DELETE") else "UPSERT"
+    # JSONファイルからデータを読み込む
+    with open(input_file_name, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
 
-    # DELETEの場合の処理
-    if action_prefix == "DELETE":
-        # maasapis.com/maasapis-com.yamlファイルを読み込む
-        reference_yaml_file = "maasapis.com/maasapis-com.yaml"
-        with open(reference_yaml_file, 'r', encoding='utf-8') as ref_file:
-            reference_data = yaml.safe_load(ref_file)
+    # すべてのレコードを削除するための変更を作成
+    delete_changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'DELETE')
 
-        # 入力ファイルからデータを読み込む
-        with open(input_file_name, 'r', encoding='utf-8') as json_file:
-            data = json.load(json_file)
+    # 最終的な削除データを作成
+    delete_output_data = {'Changes': delete_changes}
 
-        # 入力データ内のレコードを削除
-        for record in data["ResourceRecordSets"]:
-            record_name = record["Name"]
-            record_type = record["Type"]
+    # 削除アクションをJSON形式で出力
+    with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
+        json.dump(delete_output_data, json_outfile, indent=2)
 
-            # reference_dataから削除する
-            reference_data["ResourceRecordSets"] = [
-                ref_record for ref_record in reference_data["ResourceRecordSets"]
-                if not (ref_record["Name"] == record_name and ref_record["Type"] == record_type)
-            ]
+    print(f"{output_json_file_name} has been created for DELETE action.") # 更新確認の出力
 
-        # 削除後のレコードを確認
-        print(f"Updated ResourceRecordSets: {reference_data['ResourceRecordSets']}")
+    # その後、UPSERTのための変更を作成
+    changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'UPSERT')
 
-        # 更新されたreference_dataをYAML形式で出力
-        with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
-            yaml.dump(reference_data, yaml_outfile, default_flow_style=False, allow_unicode=True)
+    # 最終的なUPSERTデータを作成
+    output_data = {'Changes': changes}
 
-        print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
+    # JSON形式で出力
+    with open(output_json_file_name, 'a', encoding='utf-8') as json_outfile:
+        json.dump(output_data, json_outfile, indent=2)
 
-        # 新しい形式に変換（共通関数を使用）
-        changes = convert_record_sets_to_changes(data["ResourceRecordSets"], 'DELETE')
+    print(f"{output_json_file_name} has been updated for UPSERT action.") # 更新確認の出力
 
-        # 最終的な辞書を作成
-        output_data = {'Changes': changes}
+    # YAML形式で出力
+    with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
+        yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
 
-        # JSON形式で出力
-        with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
-            json.dump(output_data, json_outfile, indent=2)
+    print(f"{output_yaml_file_name} has been updated.") # 更新確認の出力
 
-        print(f"{output_json_file_name} has been created.")  # 更新確認の出力
-
-    else:  # UPSERTの場合の処理
-        # JSONデータを直接YAML形式に変換して出力
-        with open(input_file_name, 'r', encoding='utf-8') as json_file:
-            data = json.load(json_file)
-
-        # JSONデータを直接YAML形式に変換して出力
-        with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
-            yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
-
-        print(f"{output_yaml_file_name} has been updated.")  # 更新確認の出力
-
-        # 新しい形式に変換（動的データ取得の部分）
-        changes = convert_record_sets_to_changes(data["ResourceRecordSets"], action_prefix)
-
-        # 最終的な辞書を作成
-        output_data = {'Changes': changes}
-
-        # JSON形式で出力
-        with open(output_json_file_name, 'w', encoding='utf-8') as json_outfile:
-            json.dump(output_data, json_outfile, indent=2)
-
-        print(f"{output_json_file_name} has been created.")  # 更新確認の出力
-
-    # YAMLファイルの内容を標準出力に出力（GitHub Actionsで取得できるように）
+    # YAMLファイルの内容を標準出力に出力
     print("---")
-    print(yaml.dump(reference_data if action_prefix == "DELETE" else data, allow_unicode=True))  # 元のデータのYAML出力
-
-    # 最終的なJSONデータを標準出力に出力
-    print("---")
-    print(json.dumps(output_data, indent=2))  # 最終的なJSONデータの出力
+    print(yaml.dump(data, allow_unicode=True)) # 元のデータのYAML出力
 
 if __name__ == "__main__":
     input_file_name = sys.argv[1]
