@@ -65,10 +65,10 @@ jobs:
             # done
           base_json=$(find . -maxdepth 1 -type f -name "*-maasapis-com.json")
           if [ -n "$base_json" ]; then
-            echo "Found JSON file: $base_jason"
+            echo "Found JSON file: $base_json"
 
             # JSONファイルをYAML形式に変換し、一時ファイルに保存
-            python tool/UP_convert_yaml.py "$base_jason" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json
+            python tool/UP_convert_yaml.py "$base_json" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json
 
             # maasapis-com-update.jsonの存在確認
             if [ -f maasapis-com-delete.json ]; then
@@ -103,10 +103,10 @@ jobs:
               fi
 
               # 一時ファイルを削除
-              rm "$json_file"
+              rm "$base_json"
               rm maasapis-com-update.json
-              if [[ -f $json_file ]]; then
-                echo "$json_file の削除に失敗しました"
+              if [[ -f $base_json ]]; then
+                echo "$base_json の削除に失敗しました"
               fi
             else
               echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
@@ -127,7 +127,7 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                rm "$json_file"
+                rm "$base_json"
                 rm maasapis-com-update.json
               else
                 echo "更新用yamlが見つかりません"
