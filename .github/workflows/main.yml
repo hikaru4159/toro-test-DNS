@@ -45,7 +45,7 @@ jobs:
           ls -l
 
           # Hosted zone IDを変数に代入
-          HOSTED_ZONE_ID="Z081066224EVNI6C5559Pnobubunn"
+          HOSTED_ZONE_ID="Z081066224EVNI6C5559P"
 
           base_json=($(find . -maxdepth 1 -type f -name "*-maasapis-com.json"))
           if [ ${#base_json[@]} -eq 0 ]; then
