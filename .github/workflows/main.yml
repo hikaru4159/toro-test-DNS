@@ -60,11 +60,10 @@ jobs:
           echo "Current directory contents:"
           ls -l
           if ls *-maasapis-com.json 1> /dev/null 2>&1; then
-          # if [[ -e ./*-maasapis-com.json ]]; then
-            for json_file in *-maasapis-com.json; do
-              base_jason="$json_file"
-            done
-            # if [[ -f $json_file ]]; then
+            # for json_file in *-maasapis-com.json; do
+            #   base_jason="$json_file"
+            # done
+            base_json=$(find . -maxdepth 1 -type f -name "*-maasapis-com.json")
             echo "Found JSON file: $base_jason"
 
             # JSONファイルをYAML形式に変換し、一時ファイルに保存
@@ -103,7 +102,7 @@ jobs:
               fi
 
               # 一時ファイルを削除
-              rm base_jason
+              rm "$json_file"
               rm maasapis-com-update.json
               if [[ -f $json_file ]]; then
                 echo "$json_file の削除に失敗しました"
@@ -127,7 +126,7 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                rm base_jason
+                rm "$json_file"
                 rm maasapis-com-update.json
               else
                 echo "更新用yamlが見つかりません"
