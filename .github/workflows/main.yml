@@ -97,16 +97,15 @@ jobs:
               fi
 
               # 一時ファイルを削除
-              for json_file in $base_json; do
+              for json_file in "${base_json[@]}"; do
                 rm "$json_file"
-                if [[ -f "$json_file" ]]; then
+                if [ -f "$json_file" ]; then
                   echo "$json_file の削除に失敗しました"
+                else
+                  echo "$json_file を削除しました"
                 fi
               done
               rm maasapis-com-update.json
-              if [[ -f $base_json ]]; then
-                echo "$base_json の削除に失敗しました"
-              fi
             else
               echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
               if [ -f maasapis-com.yaml ]; then
@@ -126,10 +125,12 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                for json_file in $base_json; do
+                for json_file in "${base_json[@]}"; do
                   rm "$json_file"
-                  if [[ -f "$json_file" ]]; then
+                  if [ -f "$json_file" ]; then
                     echo "$json_file の削除に失敗しました"
+                  else
+                    echo "$json_file を削除しました"
                   fi
                 done
                 rm maasapis-com-update.json
