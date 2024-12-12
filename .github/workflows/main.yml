@@ -88,14 +88,6 @@ jobs:
               git config --local user.name "example"
               git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
 
-              if ! git diff --cached --quiet; then
-                git commit -m "Update backup file"
-                git push
-                echo "git push 完了しました。"
-              else
-                echo "gitリポジトリ変更がありません"
-              fi
-
               # 一時ファイルを削除
               for json_file in "${base_json[@]}"; do
                 rm "$json_file"
@@ -105,6 +97,15 @@ jobs:
                   echo "$json_file を削除しました"
                 fi
               done
+
+              if ! git diff --cached --quiet; then
+                git commit -m "Update backup file"
+                git push
+                echo "git push 完了しました。"
+              else
+                echo "gitリポジトリ変更がありません"
+              fi
+
               rm maasapis-com-update.json
             else
               echo "maasapis-com-update.json の生成に失敗したかレコード削除後の状態と変化がない為生成されなかった"
@@ -116,14 +117,6 @@ jobs:
                 git config --local user.name "example"
                 git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
 
-                if ! git diff --cached --quiet; then
-                  git commit -m "Update backup file"
-                  git push
-                  echo "git push 完了しました。"
-                else
-                  echo "変更がありません"
-                fi
-
                 # 一時ファイルを削除
                 for json_file in "${base_json[@]}"; do
                   rm "$json_file"
@@ -133,6 +126,16 @@ jobs:
                     echo "$json_file を削除しました"
                   fi
                 done
+
+                if ! git diff --cached --quiet; then
+                  git commit -m "Update backup file"
+                  git push
+                  echo "git push 完了しました。"
+                else
+                  echo "変更がありません"
+                fi
+
+
                 rm maasapis-com-update.json
               else
                 echo "更新用yamlが見つかりません"
