@@ -59,11 +59,12 @@ jobs:
           # for json_file in *-maasapis-com.json; do
           echo "Current directory contents:"
           ls -l
-          if ls *-maasapis-com.json 1> /dev/null 2>&1; then
+          # if ls *-maasapis-com.json 1> /dev/null 2>&1; then
             # for json_file in *-maasapis-com.json; do
             #   base_jason="$json_file"
             # done
-            base_json=$(find . -maxdepth 1 -type f -name "*-maasapis-com.json")
+          base_json=$(find . -maxdepth 1 -type f -name "*-maasapis-com.json")
+          if [ -n "$base_json" ]; then
             echo "Found JSON file: $base_jason"
 
             # JSONファイルをYAML形式に変換し、一時ファイルに保存
