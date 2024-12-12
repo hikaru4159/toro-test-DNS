@@ -55,14 +55,9 @@ jobs:
 
       - name: Json file check
         run: |
-          # マッチするファイルを見つける
-          # for json_file in *-maasapis-com.json; do
           echo "Current directory contents:"
           ls -l
-          # if ls *-maasapis-com.json 1> /dev/null 2>&1; then
-            # for json_file in *-maasapis-com.json; do
-            #   base_jason="$json_file"
-            # done
+
           base_json=$(find . -maxdepth 1 -type f -name "*-maasapis-com.json")
           if [ -n "$base_json" ]; then
             echo "Found JSON file: $base_json"
@@ -81,8 +76,7 @@ jobs:
             fi
 
             if [ -f maasapis-com-update.json ]; then
-              # 新しいレコードを追加するために再度変換
-              # python tool/UP_convert_yaml.py "$json_file" maasapis-com.yaml maasapis-com-update.json
+
               # Route 53のリソースレコードセットを更新
               aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-update.json
               echo "Route 53 のリソースレコードセットを更新しました。"
@@ -99,11 +93,16 @@ jobs:
                 git push
                 echo "git push 完了しました。"
               else
-                echo "変更がありません"
+                echo "gitリポジトリ変更がありません"
               fi
 
               # 一時ファイルを削除
-              rm "$base_json"
+              for json_file in $base_json; do
+                rm "$json_file"
+                if [[ -f "$json_file" ]]; then
+                  echo "$json_file の削除に失敗しました"
+                fi
+              done
               rm maasapis-com-update.json
               if [[ -f $base_json ]]; then
                 echo "$base_json の削除に失敗しました"
@@ -127,7 +126,12 @@ jobs:
                 fi
 
                 # 一時ファイルを削除
-                rm "$base_json"
+                for json_file in $base_json; do
+                  rm "$json_file"
+                  if [[ -f "$json_file" ]]; then
+                    echo "$json_file の削除に失敗しました"
+                  fi
+                done
                 rm maasapis-com-update.json
               else
                 echo "更新用yamlが見つかりません"
