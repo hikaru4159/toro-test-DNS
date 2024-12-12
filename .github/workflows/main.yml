@@ -84,19 +84,12 @@ jobs:
               # YAMLファイルをリポジトリに追加
               mv maasapis-com.yaml maasapis.com/
 
+              # 一時ファイルを削除
+              git rm "$json_file"
+
               git config --local user.email "example@example.com"
               git config --local user.name "example"
               git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
-
-              # 一時ファイルを削除
-              for json_file in "${base_json[@]}"; do
-                rm "$json_file"
-                if [ -f "$json_file" ]; then
-                  echo "$json_file の削除に失敗しました"
-                else
-                  echo "$json_file を削除しました"
-                fi
-              done
 
               if ! git diff --cached --quiet; then
                 git commit -m "Update backup file"
@@ -113,19 +106,12 @@ jobs:
                 # YAMLファイルをリポジトリに追加
                 mv maasapis-com.yaml maasapis.com/
 
+                # 一時ファイルを削除
+                git rm "$json_file"
+
                 git config --local user.email "example@example.com"
                 git config --local user.name "example"
                 git add maasapis.com/maasapis-com.yaml # 正しいファイルパスを指定
-
-                # 一時ファイルを削除
-                for json_file in "${base_json[@]}"; do
-                  rm "$json_file"
-                  if [ -f "$json_file" ]; then
-                    echo "$json_file の削除に失敗しました"
-                  else
-                    echo "$json_file を削除しました"
-                  fi
-                done
 
                 if ! git diff --cached --quiet; then
                   git commit -m "Update backup file"
