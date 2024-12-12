@@ -85,7 +85,14 @@ jobs:
               mv maasapis-com.yaml maasapis.com/
 
               # 一時ファイルを削除
-              git rm "$json_file"
+              for json_file in "${base_json[@]}"; do
+                git rm "$json_file" # gitリポジトリから削除
+                if [ -f "$json_file" ]; then
+                  echo "$json_file の削除に失敗しました"
+                else
+                  echo "$json_file を削除しました"
+                fi
+              done
 
               git config --local user.email "example@example.com"
               git config --local user.name "example"
@@ -107,7 +114,14 @@ jobs:
                 mv maasapis-com.yaml maasapis.com/
 
                 # 一時ファイルを削除
-                git rm "$json_file"
+                for json_file in "${base_json[@]}"; do
+                  git rm "$json_file" # gitリポジトリから削除
+                  if [ -f "$json_file" ]; then
+                    echo "$json_file の削除に失敗しました"
+                  else
+                    echo "$json_file を削除しました"
+                  fi
+                done
 
                 git config --local user.email "example@example.com"
                 git config --local user.name "example"
