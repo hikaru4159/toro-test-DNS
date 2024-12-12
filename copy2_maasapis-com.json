@@ -49,16 +49,6 @@
             ]
         },
         {
-            "Name": "handson.toro.toyota.",
-            "Type": "SOA",
-            "TTL": 900,
-            "ResourceRecords": [
-                {
-                    "Value": "ns-1971.awsdns-54.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
-                }
-            ]
-        },
-        {
             "Name": "_c09806f951d71e2095a396e9885fffaa.hikaru-test.maasapis.com.",
             "Type": "CNAME",
             "TTL": 111,
