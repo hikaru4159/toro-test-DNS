@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  # schedule:
-    # 定期実行する時間 +9:00すると日本時間
-    # - cron: '30 6 * * *'
 
 permissions:
   id-token: write
@@ -42,21 +39,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml jq
 
-      - name: Backup acquisition
-        run: |
-          if [ '${{ github.event_name }}' == 'schedule' ]; then
-            aws route53 list-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P
-            echo "リソースレコードセットのJSONデータ:"
-            cat maasapis-com.json
-            echo "::set-output name=json_data::$(cat maasapis-com.json | jq -Rsa .)"
-          else
-            echo "スケジュール以外の処理実行"
-          fi
-
       - name: Json file check
         run: |
           echo "Current directory contents:"
           ls -l
+
+          # Hosted zone IDを変数に代入
+          HOSTED_ZONE_ID="Z081066224EVNI6C5559Pnobubunn"
 
           base_json=($(find . -maxdepth 1 -type f -name "*-maasapis-com.json"))
           if [ ${#base_json[@]} -eq 0 ]; then
@@ -69,7 +58,7 @@ jobs:
 
             # Route 53のリソースレコードセットを削除
             if [ -f maasapis-com-delete.json ]; then
-              aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-delete.json
+              aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --change-batch file://maasapis-com-delete.json
               echo "Route 53 のリソースレコードセットを削除しました。"
               rm maasapis-com-delete.json
             else
@@ -78,7 +67,7 @@ jobs:
 
             # リソースレコードセットの更新
             if [ -f maasapis-com-update.json ]; then
-              aws route53 change-resource-record-sets --hosted-zone-id Z081066224EVNI6C5559P --change-batch file://maasapis-com-update.json
+              aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --change-batch file://maasapis-com-update.json
               echo "Route 53 のリソースレコードセットを更新しました。"
 
               # YAMLファイルをリポジトリに追加
@@ -132,6 +121,7 @@ jobs:
               fi
             fi
           fi
+
 
 
 
