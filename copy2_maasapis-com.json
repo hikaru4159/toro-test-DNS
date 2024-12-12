@@ -30,7 +30,7 @@
             ]
         },
         {
-            "Name": "handson.toro.toyota.",
+            "Name": "test.hikaru-test.maasapis.com.",
             "Type": "NS",
             "TTL": 172800,
             "ResourceRecords": [
