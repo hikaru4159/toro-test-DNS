@@ -54,7 +54,7 @@ jobs:
             echo "Found JSON file(s): ${base_json[*]}"
 
             # JSONファイルをYAML形式に変換し、一時ファイルに保存
-            python tool/UP_convert_yaml.py "${base_json[@]}" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json
+            python tool/UP_convert_yaml.py "${base_json[@]}" maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json hikaru-test.maasapis.com.
 
             # Route 53のリソースレコードセットを削除
             if [ -f maasapis-com-delete.json ]; then
