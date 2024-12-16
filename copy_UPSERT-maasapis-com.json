@@ -1,8 +1,6 @@
 {
     "ResourceRecordSets": [
         {
-            "ResourceRecordSets": [
-                {
                     "Name": "hikaru-test.maasapis.com.",
                     "Type": "NS",
                     "TTL": 172800,
@@ -58,8 +56,6 @@
                 {
                     "Value": "_8c298225cd096b4f1e0de16ad9456df8.zfyfvmchrl.acm-validations.aws."     
                 }
-            ]
-        }
             ]
         }
     ]
