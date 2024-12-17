@@ -5,10 +5,28 @@ import csv
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
+import chardet
+
+def upload_convert():
+    input_file = filedialog.askopenfilename(title="変換するYAMLファイルを選択", filetypes=[("YAML files", "*.yaml")], initialdir=os.getcwd())
+    
+    if input_file:
+        convert_yaml(input_file)
+
+
+def detect_encoding(file_path):
+    # ファイルのエンコーディングを検出する
+    with open(file_path, 'rb') as file:
+        raw_data = file.read()
+        result = chardet.detect(raw_data)
+        encoding = result['encoding']
+    return encoding
 
 def convert_yaml(input_file):
+    encoding = detect_encoding(input_file)
+    
     # YAMLファイルを読み込む
-    with open(input_file, 'r', encoding='utf-8') as file:
+    with open(input_file, 'r', encoding=encoding) as file:
         data = yaml.safe_load(file)
 
     # デバッグ: データの構造を確認
@@ -57,29 +75,26 @@ def convert_yaml(input_file):
 
     messagebox.showinfo("完了", f"変換が完了しました:\n{output_file}")
 
-def upload_convert():
-    # YAMLファイルを選択するダイアログを表示
-    input_file = filedialog.askopenfilename(title="変換するYAMLファイルを選択", filetypes=[("YAML files", "*.yaml")], initialdir=os.getcwd())
-    
-    if input_file:
-        convert_yaml(input_file)
-
 def change_yaml_to_json(input_yaml, output_json):
-    with open(input_yaml, 'r', encoding='utf-8') as yaml_file:
+    encoding = detect_encoding(input_yaml)
+    with open(input_yaml, 'r', encoding=encoding) as yaml_file:
         data = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
     with open(output_json, 'w', encoding='utf-8') as json_file:
         json.dump(data, json_file, indent=4, ensure_ascii=False)
 
 def change_json_to_yaml(input_json, output_yaml):
-    with open(input_json, 'r', encoding='utf-8') as json_file:
+    encoding = detect_encoding(input_json)
+    with open(input_json, 'r', encoding=encoding) as json_file:
         data = json.load(json_file)
 
     with open(output_yaml, 'w', encoding='utf-8') as yaml_file:
         yaml.dump(data, yaml_file, default_flow_style=False, allow_unicode=True)
 
 def convert_to_csv(input_file, output_csv):
-    with open(input_file, 'r', encoding='utf-8') as file:
+    encoding = detect_encoding(input_file)
+    
+    with open(input_file, 'r', encoding=encoding) as file:
         if input_file.endswith('.json'):
             data = json.load(file)
         elif input_file.endswith('.yaml'):
