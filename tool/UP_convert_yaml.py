@@ -30,8 +30,8 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, o
     with open(reference_yaml_file, 'r', encoding='utf-8') as ref_file:
         reference_data = yaml.safe_load(ref_file)
 
-    with open(input_file_name, 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)
+    with open(input_file_name, 'r', encoding='utf-8') as new_record_file:
+        data = yaml.safe_load(new_record_file)
 
     # DELETE changes
     delete_changes = convert_record_sets_to_changes(reference_data["ResourceRecordSets"], 'DELETE', zone_name)
