@@ -60,9 +60,10 @@ jobs:
 
               # JSONファイルをYAML形式に変換し、一時ファイルに保存
               base_json=($(find . -maxdepth 1 -type f -name "*maasapis-com.json"))
+              
               if [ ${#base_json[@]} -eq 0 ]; then
                 echo "*maasapis-com.json が存在しません。処理をスキップします。"
-              elif
+              else
                 echo "Found JSON file(s): ${base_json[*]}"
 
                 # Route 53のリソースレコードセットを削除
@@ -129,12 +130,10 @@ jobs:
                     echo "更新用yamlが見つかりません"
                   fi
                 fi
-              else
-                echo "YAMLから変換されたJSONファイルが見つかりません"
               fi
             else
-              echo "YAMLファイルからの変換に失敗しました"
+              echo "YAMLから変換されたJSONファイルが見つかりません"
             fi
           else
-            echo "YAMLファイルが存在しません。処理をスキップします。"
+            echo "YAMLファイルがありません"
           fi
