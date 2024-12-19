@@ -26,6 +26,13 @@ def write_json_file(filename, data):
     print(f"{filename} has been created/updated.")
 
 def convert_yaml(input_file_name, bf_maasapis_yaml, output_DEL_json_name, output_UP_json_name, zone_name):
+    # bf_maasapis_yamlの内容を表示デバッグ
+    with open(bf_maasapis_yaml, 'r', encoding='utf-8') as ref_file:
+        reference_data = yaml.safe_load(ref_file)
+        # 内容を表示
+        print("Contents of bf_maasapis_yaml:")
+        print(reference_data) 
+
     with open(bf_maasapis_yaml, 'r', encoding='utf-8') as ref_file:
         reference_data = yaml.safe_load(ref_file)
 
