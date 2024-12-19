@@ -1,10 +1,10 @@
 ResourceRecordSets:
 - Name: hikaru-test.maasapis.com.
   ResourceRecords:
-  - Value: ns-1847.awsdns-38.co.uk.
-  - Value: ns-1211.awsdns-23.org.
-  - Value: ns-613.awsdns-12.net.
-  - Value: ns-68.awsdns-08.com.
+  - Value: ns-1051.awsdns-03.org.
+  - Value: ns-263.awsdns-32.com.
+  - Value: ns-756.awsdns-30.net.
+  - Value: ns-2025.awsdns-61.co.uk.
   TTL: 300
   Type: NS
 - Name: hikaru-test.maasapis.com.
