@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  DNS_backup:
+  route53-sync:
     runs-on: ubuntu-latest
 
     steps:
