@@ -67,9 +67,8 @@ jobs:
           if ! diff -q bf_maasapis-com.yaml now_maasapis-com.yaml > /dev/null; then
             echo "Differences found between bf_maasapis-com.yaml and now_maasapis-com.yaml."
           # 更新ファイル、削除ファイルを作成し一時ファイルに保存
-          # python tool/UP_convert_yaml.py 更新レコード入力ファイル 出力yaml名(リポジトリ管理用) 削除用出力json名 更新用出力json名 自身判別用ホストゾーン名
-
-            python tool/UP_convert_yaml.py now_maasapis-com.yaml maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json hikaru-test.maasapis.com.
+          # python tool/UP_convert_yaml.py 更新レコード入力ファイル 削除レコードファイル(更新前レコード) 削除用出力json名 更新用出力json名 自身判別用ホストゾーン名
+            python tool/UP_convert_yaml.py now_maasapis-com.yaml bf_maasapis-com.yaml maasapis-com-delete.json maasapis-com-update.json hikaru-test.maasapis.com.
 
             # Route 53のリソースレコードセットを削除
             if [ -f maasapis-com-delete.json ]; then

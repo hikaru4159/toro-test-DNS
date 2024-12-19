@@ -25,9 +25,8 @@ def write_json_file(filename, data):
         json.dump(data, json_file, indent=2)
     print(f"{filename} has been created/updated.")
 
-def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, output_UP_json_name, zone_name):
-    reference_yaml_file = "maasapis.com/maasapis-com.yaml"
-    with open(reference_yaml_file, 'r', encoding='utf-8') as ref_file:
+def convert_yaml(input_file_name, bf_maasapis_yaml, output_DEL_json_name, output_UP_json_name, zone_name):
+    with open(bf_maasapis_yaml, 'r', encoding='utf-8') as ref_file:
         reference_data = yaml.safe_load(ref_file)
 
     with open(input_file_name, 'r', encoding='utf-8') as new_record_file:
@@ -46,9 +45,9 @@ def convert_yaml(input_file_name, output_yaml_file_name, output_DEL_json_name, o
         write_json_file(output_UP_json_name, {'Changes': changes})
 
     # Write YAML
-    with open(output_yaml_file_name, 'w', encoding='utf-8') as yaml_outfile:
+    with open("maasapis-com.yaml", 'w', encoding='utf-8') as yaml_outfile:
         yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
-    print(f"{output_yaml_file_name} has been updated.")
+    print("maasapis-com.yaml has been updated.")
 
     # Output YAML content to standard output
     print("---")
