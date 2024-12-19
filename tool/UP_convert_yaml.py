@@ -52,11 +52,11 @@ def convert_yaml(input_file_name, bf_maasapis_yaml, output_DEL_json_name, output
         write_json_file(output_UP_json_name, {'Changes': changes})
 
     # Write YAML
-    with open("maasapis-com.yaml", 'w', encoding='utf-8') as yaml_outfile:
-        yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
-    print("maasapis-com.yaml has been updated.")
+    # with open("maasapis-com.yaml", 'w', encoding='utf-8') as yaml_outfile:
+    #     yaml.dump(data, yaml_outfile, default_flow_style=False, allow_unicode=True)
+    print("maasapis-update.yaml created echo data under.")
 
-    # Output YAML content to standard output
+# Output YAML content to standard output
     print("---")
     print(yaml.dump(data, allow_unicode=True))
 

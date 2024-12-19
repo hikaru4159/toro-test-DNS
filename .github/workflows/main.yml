@@ -88,8 +88,8 @@ jobs:
               aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --change-batch file://maasapis-com-update.json
               echo "Route 53 のリソースレコードセットを更新しました。"
 
-              # YAMLファイルをリポジトリに追加
-              mv maasapis-com.yaml maasapis.com/
+              # # YAMLファイルをリポジトリに追加
+              # mv maasapis-com.yaml maasapis.com/
 
               git config --local user.email "example@example.com"
               git config --local user.name "example"
