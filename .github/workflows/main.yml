@@ -73,6 +73,10 @@ jobs:
 
             # Route 53のリソースレコードセットを削除
             if [ -f maasapis-com-delete.json ]; then
+                # ファイルの内容を出力
+              echo "maasapis-com-delete.jsonの内容:"
+              cat maasapis-com-delete.json
+
               aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --change-batch file://maasapis-com-delete.json
               echo "Route 53 のリソースレコードセットを削除しました。"
               rm maasapis-com-delete.json
