@@ -24,5 +24,5 @@ ResourceRecordSets:
 - Name: _c09806f951d71e2095a396e9885fffaa.hikaru-test.maasapis.com.
   ResourceRecords:
   - Value: _8c298225cd096b4f1e0de16ad9456df8.zfyfvmchrl.acm-validations.aws.
-  TTL: 333
+  TTL: 111
   Type: CNAME
