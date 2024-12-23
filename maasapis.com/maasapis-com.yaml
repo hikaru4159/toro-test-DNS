@@ -7,17 +7,6 @@ ResourceRecordSets:
   - Value: ns-273.awsdns-34.com.
   TTL: 172800
   Type: NS
-- Name: hikaru-test.maasapis.com.
-  ResourceRecords:
-  - Value: ns-1474.awsdns-56.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600
-      86400
-  TTL: 900
-  Type: SOA
-- Name: a.hikaru-test.maasapis.com.
-  ResourceRecords:
-  - Value: b
-  TTL: 300
-  Type: CNAME
 - Name: c.hikaru-test.maasapis.com.
   ResourceRecords:
   - Value: d.hikaru-test.maasapis.com
@@ -36,3 +25,14 @@ ResourceRecordSets:
   - Value: ns-1125.awsdns-12.org.
   TTL: 300
   Type: NS
+- Name: hikaru-test.maasapis.com.
+  ResourceRecords:
+  - Value: ns-1474.awsdns-56.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600
+      86400
+  TTL: 900
+  Type: SOA
+- Name: a.hikaru-test.maasapis.com.
+  ResourceRecords:
+  - Value: b
+  TTL: 300
+  Type: CNAME
