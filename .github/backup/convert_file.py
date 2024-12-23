@@ -7,6 +7,13 @@ from tkinter import messagebox
 from tkinter import filedialog
 import chardet
 
+def upload_convert():
+    input_file = filedialog.askopenfilename(title="変換するYAMLファイルを選択", filetypes=[("YAML files", "*.yaml")], initialdir=os.getcwd())
+    
+    if input_file:
+        convert_yaml(input_file)
+
+
 def detect_encoding(file_path):
     # ファイルのエンコーディングを検出する
     with open(file_path, 'rb') as file:
@@ -14,6 +21,59 @@ def detect_encoding(file_path):
         result = chardet.detect(raw_data)
         encoding = result['encoding']
     return encoding
+
+def convert_yaml(input_file):
+    encoding = detect_encoding(input_file)
+    
+    # YAMLファイルを読み込む
+    with open(input_file, 'r', encoding=encoding) as file:
+        data = yaml.safe_load(file)
+
+    # デバッグ: データの構造を確認
+    print("Data loaded from YAML:")
+    print(data)
+
+    # 新しい形式に変換
+    changes = []
+
+    # 'ResourceRecordSets'キーのリストを処理
+    if 'ResourceRecordSets' in data:
+        for record in data['ResourceRecordSets']:
+            # デバッグ: 各レコードの内容を確認
+            print("Processing record:")
+            print(record)
+
+            # レコードが辞書型であることを確認
+            if isinstance(record, dict):
+                if 'AliasTarget' in record:
+                    changes.append({
+                        'Action': 'UPSERT',
+                        'ResourceRecordSet': record
+                    })
+                else:
+                    changes.append({
+                        'Action': 'UPSERT',
+                        'ResourceRecordSet': {
+                            'Name': record['Name'],
+                            'ResourceRecords': record['ResourceRecords'],
+                            'TTL': record['TTL'],
+                            'Type': record['Type']
+                        }
+                    })
+            else:
+                print("Warning: Record is not a dictionary:", record)
+
+    # 最終的な辞書を作成
+    output_data = {'Changes': changes}
+
+    # 出力ファイル名を生成
+    output_file = os.path.join(os.path.dirname(input_file), f"upconv-{os.path.basename(input_file)}")
+
+    # 新しいYAML形式で出力
+    with open(output_file, 'w', encoding='utf-8') as outfile:
+        yaml.dump(output_data, outfile, allow_unicode=True)
+
+    messagebox.showinfo("完了", f"変換が完了しました:\n{output_file}")
 
 def change_yaml_to_json(input_yaml, output_json):
     encoding = detect_encoding(input_yaml)
@@ -92,6 +152,10 @@ def convert_file_to_csv():
 def create_gui():
     root = tk.Tk()
     root.title("JSON/YAML変換ツール")
+
+    # YAML変換ボタン
+    upload_button = tk.Button(root, text="upload変換", command=upload_convert)
+    upload_button.pack(pady=10)
 
     # JSON/YAML変換ボタン
     select_button = tk.Button(root, text="ファイルを選択して変換", command=select_file)
