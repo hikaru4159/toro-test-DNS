@@ -17,6 +17,14 @@ ResourceRecordSets:
   - Value: f.hikaru-test.maasapis.com
   TTL: 300
   Type: CNAME
+- Name: test.hikaru-test.maasapis.com.
+  ResourceRecords:
+  - Value: ns-852.awsdns-42.net.
+  - Value: ns-372.awsdns-46.com.
+  - Value: ns-1796.awsdns-32.co.uk.
+  - Value: ns-1125.awsdns-12.org.
+  TTL: 300
+  Type: NS
 - Name: hikaru-test.maasapis.com.
   ResourceRecords:
   - Value: ns-1474.awsdns-56.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600
